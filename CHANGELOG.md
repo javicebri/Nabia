@@ -9,6 +9,8 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-07
+
 ### Added
 
 - Provenance on every series: `source`, `source_kind` (new
