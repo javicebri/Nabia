@@ -57,6 +57,8 @@ daily.values[Variable.PRECIPITATION]  # tuple[float | None, ...] in mm
 daily.units  # {Variable.PRECIPITATION: Unit.MILLIMETRE, ...}
 daily.to_dataframe()  # pandas, index = date
 daily.model_dump_json()  # serializable, loadable again
+daily.source, daily.source_kind  # provenance, when known for certain
+daily.attribution  # credit line the data licence requires
 ```
 
 Type against capabilities to stay provider-agnostic:
@@ -113,6 +115,8 @@ Every error derives from `nabia.NabiaError`:
 - `ProviderConnectionError`: network failure after retries.
 - `ProviderHTTPError` (`AuthenticationError`, `RateLimitError`,
   `ProviderServerError`): unexpected HTTP status.
+- `NoDataError`: a requested variable came back entirely empty (the
+  chosen source may not provide it, or the period is not available).
 - `ProviderContractError` (`UnitMismatchError`): the upstream response
   changed shape or units. Nabia fails instead of returning wrong data.
 
@@ -129,6 +133,8 @@ Every error derives from `nabia.NabiaError`:
 
 ## Data licensing
 
+Every series carries the provider's required credit line in
+`series.attribution`; show it wherever the data are displayed.
 Each provider has its own terms (attribution, commercial use, rate
 limits); see the provider README. Applications displaying the data
 must honour them.

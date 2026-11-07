@@ -6,6 +6,7 @@ timestamps. Breaking changes here require a new major version.
 """
 
 from datetime import date
+from enum import StrEnum
 from itertools import pairwise
 from typing import TYPE_CHECKING, Any, Literal, Self
 
@@ -22,6 +23,30 @@ from nabia.core.errors import MissingDependencyError
 
 if TYPE_CHECKING:
     import pandas as pd
+
+
+class SourceKind(StrEnum):
+    """Nature of the data in a series.
+
+    Only ``OBSERVATION`` is a direct measurement; the other kinds are
+    model or remote-sensing estimates.
+    """
+
+    FORECAST = "forecast"
+    """Numerical weather prediction output."""
+
+    ANALYSIS = "analysis"
+    """Operational model analysis of the past (e.g. ECMWF IFS)."""
+
+    REANALYSIS = "reanalysis"
+    """Consistent model reconstruction of the past assimilating
+    observations (e.g. ERA5)."""
+
+    OBSERVATION = "observation"
+    """In-situ measurement (e.g. a weather station)."""
+
+    SATELLITE = "satellite"
+    """Estimate derived from satellite remote sensing."""
 
 
 class NabiaModel(BaseModel):
@@ -50,8 +75,14 @@ class TimeSeries[TimeT: date](NabiaModel):
         provider: Provider identifier (e.g. ``"open_meteo"``).
         dataset: Dataset or endpoint within the provider.
         location: Coordinates the data refer to (grid cell or station).
-            They may differ slightly from the requested point.
-        elevation: Metres above sea level of ``location``, if known.
+            They may differ from the requested point.
+        elevation: Altitude in metres that the provider associates
+            with the data, if known. Its meaning depends on the
+            provider (see its README): Open-Meteo returns the terrain
+            altitude of the requested point, which it uses to pick
+            the grid cell and to correct temperatures, so it is not
+            the altitude of ``location``; station data report the
+            station altitude.
         timezone: IANA time zone used for timestamps and daily bounds.
         time: Strictly increasing time axis.
         values: Canonical variable to values aligned with ``time``;
@@ -60,6 +91,14 @@ class TimeSeries[TimeT: date](NabiaModel):
             catalog when omitted; must match it when given (kept as a
             field so serialized series stay self-describing and can be
             loaded back).
+        source: Model, product or station that produced the data,
+            when known for certain. ``None`` when the provider picks
+            the source itself without reporting it.
+        source_kind: Nature of the data (forecast, reanalysis,
+            observation...); ``None`` when it cannot be stated for
+            the whole series.
+        attribution: Credit line the provider's licence requires
+            applications to display, if any.
     """
 
     provider: str
@@ -70,6 +109,9 @@ class TimeSeries[TimeT: date](NabiaModel):
     time: tuple[TimeT, ...]
     values: dict[Variable, Values]
     units: dict[Variable, Unit] = Field(default_factory=_catalog_units)
+    source: str | None = None
+    source_kind: SourceKind | None = None
+    attribution: str | None = None
 
     @model_validator(mode="after")
     def _check_axis(self) -> Self:
@@ -129,6 +171,9 @@ class TimeSeries[TimeT: date](NabiaModel):
             longitude=self.location.longitude,
             elevation=self.elevation,
             units={var.value: unit.value for var, unit in self.units.items()},
+            source=self.source,
+            source_kind=self.source_kind.value if self.source_kind else None,
+            attribution=self.attribution,
         )
         return frame
 

@@ -18,7 +18,9 @@ Use `providers/open_meteo/` as the reference implementation.
    - `schemas.py`: pydantic models mirroring the raw JSON; declare
      only what is used.
    - `parser.py`: raw schema -> `HourlySeries`/`DailySeries`, using
-     `VariableTable.extract` (it checks columns and units).
+     `VariableTable.extract` (it checks columns, units and empty
+     columns). Fill `source`, `source_kind` and `attribution` only
+     with facts the request or the response guarantee.
    - `client.py`: subclass `BaseClient`, set `PROVIDER`, validate
      arguments with `@validate_call`, pass `secret_params` for
      credentials sent as query parameters.

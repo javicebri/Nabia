@@ -11,14 +11,29 @@ they are always listed under **Changed** or **Removed**.
 
 ### Added
 
+- Provenance on every series: `source`, `source_kind` (new
+  `SourceKind` enum) and `attribution`. Optional fields, so series
+  serialized with 0.1.0 still load.
+- `NoDataError` when a requested variable has no values at all.
+- Open-Meteo: optional `model=` to choose the source (default
+  `best_match`, unchanged) and `elevation=` to set the altitude of
+  the point; the spec watcher also tracks the archive source list.
 - Upstream specification watcher: Open-Meteo's published OpenAPI files
   are reduced to a local, git-ignored JSON snapshot; offline tests
   check every value the client sends, live tests report upstream
   additions and removals.
 - `NOTICE` crediting the Open-Meteo data (CC BY 4.0) in test fixtures.
 
+### Changed
+
+- A variable returned entirely empty now raises `NoDataError`
+  instead of yielding a column of `None`.
+
 ### Fixed
 
+- `elevation` documentation: for Open-Meteo it is the terrain
+  altitude of the requested point (90 m terrain model), not the
+  altitude of the grid cell.
 - README: clarify that `python -m nabia.catalog` needs the interpreter
   where Nabia is installed (`uv run` inside this repository).
 

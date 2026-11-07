@@ -11,6 +11,7 @@ from nabia import (
     HourlySeries,
     MissingDependencyError,
     Resolution,
+    SourceKind,
     Unit,
     Variable,
 )
@@ -101,3 +102,30 @@ def test_to_dataframe_without_pandas(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "pandas", None)
     with pytest.raises(MissingDependencyError, match=r"nabia\[pandas\]"):
         hourly().to_dataframe()
+
+
+def test_provenance_defaults_to_unknown() -> None:
+    series = hourly()
+    assert series.source is None
+    assert series.source_kind is None
+    assert series.attribution is None
+
+
+def test_series_saved_by_0_1_0_still_load() -> None:
+    # 0.1.0 serialized series had no provenance fields.
+    data = hourly().model_dump(mode="json")
+    for field in ("source", "source_kind", "attribution"):
+        del data[field]
+    assert HourlySeries.model_validate(data) == hourly()
+
+
+def test_dataframe_carries_provenance() -> None:
+    series = hourly(
+        source="era5",
+        source_kind=SourceKind.REANALYSIS,
+        attribution="Data by X",
+    )
+    attrs = series.to_dataframe().attrs
+    assert attrs["source"] == "era5"
+    assert attrs["source_kind"] == "reanalysis"
+    assert attrs["attribution"] == "Data by X"

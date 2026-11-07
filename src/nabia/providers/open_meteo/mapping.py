@@ -13,8 +13,33 @@ from datetime import date
 from types import MappingProxyType
 
 from nabia.catalog import NativeVariable, Unit, Variable, VariableTable
+from nabia.core.models import SourceKind
 
 VERIFIED_ON = date(2026, 11, 7)
+
+#: Credit line required by the CC BY 4.0 data licence.
+ATTRIBUTION = (
+    "Weather data by Open-Meteo.com (https://open-meteo.com/), CC BY 4.0"
+)
+
+#: Model Open-Meteo uses when none is requested: it picks the best
+#: source per location and date without reporting which one.
+DEFAULT_MODEL = "best_match"
+
+#: Nature of each archive source listed in the published specification
+#: (``models`` of ``historical-weather.yml``, checked 2026-11-07).
+#: Sources missing here are still accepted; their kind is unknown.
+ARCHIVE_SOURCES: MappingProxyType[str, SourceKind] = MappingProxyType(
+    {
+        "era5": SourceKind.REANALYSIS,
+        "era5_seamless": SourceKind.REANALYSIS,
+        "era5_land": SourceKind.REANALYSIS,
+        "era5_ensemble": SourceKind.REANALYSIS,
+        "cerra": SourceKind.REANALYSIS,
+        "ecmwf_ifs": SourceKind.ANALYSIS,
+        "ecmwf_ifs_analysis_long_window": SourceKind.ANALYSIS,
+    }
+)
 
 #: Query parameters that pin the units reported by Open-Meteo.
 UNIT_PARAMS: MappingProxyType[str, str] = MappingProxyType(

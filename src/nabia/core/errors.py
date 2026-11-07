@@ -93,6 +93,15 @@ class ProviderServerError(ProviderHTTPError):
     """The provider failed on its side (HTTP 5xx)."""
 
 
+class NoDataError(ProviderError):
+    """A requested variable came back with no values at all.
+
+    Raised instead of returning a column of ``None``: the selected
+    source may not provide the variable, or the period may not be
+    available yet. Partially missing values are still returned.
+    """
+
+
 class ProviderContractError(ProviderError):
     """The response does not match what Nabia expects.
 

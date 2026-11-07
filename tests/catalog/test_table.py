@@ -13,6 +13,7 @@ from nabia.catalog import (
 )
 from nabia.catalog.__main__ import render
 from nabia.core.errors import (
+    NoDataError,
     ProviderContractError,
     UnitMismatchError,
     UnsupportedVariableError,
@@ -95,3 +96,21 @@ def test_render_cross_provider_table() -> None:
     assert "## hourly" in output
     assert "| air_temperature | °C | `temperature_2m` (°C)" in output
     assert "Last verified:" in output
+
+
+def test_extract_rejects_an_entirely_empty_column() -> None:
+    with pytest.raises(NoDataError, match="with source 'x'"):
+        SUNSHINE.extract(
+            Resolution.HOURLY,
+            [Variable.SUNSHINE_DURATION],
+            {"sun": [None, None]},
+            {"sun": "s"},
+            source="x",
+        )
+
+
+def test_extract_accepts_an_empty_time_axis() -> None:
+    values = SUNSHINE.extract(
+        Resolution.HOURLY, [Variable.SUNSHINE_DURATION], {"sun": []}, None
+    )
+    assert values == {Variable.SUNSHINE_DURATION: ()}

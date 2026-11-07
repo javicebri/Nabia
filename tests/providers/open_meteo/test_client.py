@@ -18,8 +18,10 @@ from pydantic import ValidationError
 from nabia import (
     GeoPoint,
     NabiaSettings,
+    NoDataError,
     ProviderContractError,
     ProviderHTTPError,
+    SourceKind,
     UnitMismatchError,
     UnsupportedVariableError,
     Variable,
@@ -245,3 +247,120 @@ def test_client_implements_capability_protocols(
     assert isinstance(client, ForecastDailyProvider)
     assert isinstance(client, HistoricalHourlyProvider)
     assert isinstance(client, HistoricalDailyProvider)
+
+
+# -- provenance, model, elevation, empty columns ----------
+
+
+def test_default_model_claims_no_source(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    route = respx_mock.get(ARCHIVE_URL).respond(
+        200, json=load("archive_daily.json")
+    )
+    series = client.historical_daily(
+        MADRID, [Variable.RAIN], start=DAY, end=DAY
+    )
+    params = params_of(route)
+    assert "models" not in params
+    assert "elevation" not in params
+    assert series.source is None
+    assert series.source_kind is None  # best_match mixes source kinds
+    assert series.attribution is not None
+    assert "Open-Meteo" in series.attribution
+
+
+def test_forecast_is_always_forecast_kind(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    respx_mock.get(FORECAST_URL).respond(200, json=load("archive_daily.json"))
+    series = client.forecast_daily(MADRID, [Variable.RAIN])
+    assert series.source is None
+    assert series.source_kind is SourceKind.FORECAST
+
+
+@pytest.mark.parametrize(
+    ("model", "kind"),
+    [
+        ("era5", SourceKind.REANALYSIS),
+        ("ecmwf_ifs", SourceKind.ANALYSIS),
+        ("brand_new_model", None),  # accepted, nature unknown
+    ],
+)
+def test_explicit_archive_model_sets_provenance(
+    client: OpenMeteoClient,
+    respx_mock: respx.MockRouter,
+    model: str,
+    kind: SourceKind | None,
+) -> None:
+    route = respx_mock.get(ARCHIVE_URL).respond(
+        200, json=load("archive_daily.json")
+    )
+    series = client.historical_daily(
+        MADRID, [Variable.RAIN], start=DAY, end=DAY, model=model
+    )
+    assert params_of(route)["models"] == model
+    assert series.source == model
+    assert series.source_kind is kind
+
+
+def test_explicit_best_match_claims_no_source(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    respx_mock.get(ARCHIVE_URL).respond(200, json=load("archive_daily.json"))
+    series = client.historical_daily(
+        MADRID, [Variable.RAIN], start=DAY, end=DAY, model="best_match"
+    )
+    assert series.source is None
+
+
+@pytest.mark.parametrize("model", ["era5,ecmwf_ifs", "ERA5", "", "a b"])
+def test_invalid_model_rejected(client: OpenMeteoClient, model: str) -> None:
+    with pytest.raises(ValidationError):
+        client.forecast_daily(MADRID, [Variable.RAIN], model=model)
+
+
+def test_elevation_is_sent(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    route = respx_mock.get(FORECAST_URL).respond(
+        200, json=load("archive_daily.json")
+    )
+    client.forecast_daily(MADRID, [Variable.RAIN], elevation=1667)
+    assert params_of(route)["elevation"] == "1667.0"
+
+
+@pytest.mark.parametrize("elevation", [-501, 9001])
+def test_elevation_is_validated(
+    client: OpenMeteoClient, elevation: float
+) -> None:
+    with pytest.raises(ValidationError):
+        client.forecast_daily(MADRID, [Variable.RAIN], elevation=elevation)
+
+
+def test_empty_column_raises_no_data(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    payload = load("archive_daily.json")
+    payload["daily"]["precipitation_sum"] = [None, None]
+    respx_mock.get(ARCHIVE_URL).respond(200, json=payload)
+    with pytest.raises(NoDataError, match="'era5_land'"):
+        client.historical_daily(
+            MADRID,
+            [Variable.PRECIPITATION],
+            start=DAY,
+            end=DAY,
+            model="era5_land",
+        )
+
+
+def test_partially_missing_values_are_kept(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    payload = load("archive_daily.json")
+    payload["daily"]["precipitation_sum"] = [None, 2.5]
+    respx_mock.get(ARCHIVE_URL).respond(200, json=payload)
+    series = client.historical_daily(
+        MADRID, [Variable.PRECIPITATION], start=DAY, end=DAY
+    )
+    assert series.values[Variable.PRECIPITATION] == (None, 2.5)

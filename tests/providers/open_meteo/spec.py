@@ -55,13 +55,21 @@ TRACKED_ENUMS = (
 )
 
 
-def extract(spec: Mapping[str, Any]) -> Contract:
+#: Enums tracked for one specification only. The archive source list is
+#: short and stable, and it backs ``ARCHIVE_SOURCES``; the forecast
+#: model list (about 50 entries) changes too often to be useful.
+EXTRA_ENUMS: dict[str, tuple[str, ...]] = {"archive": ("models",)}
+
+
+def extract(
+    spec: Mapping[str, Any], extra_enums: tuple[str, ...] = ()
+) -> Contract:
     """Reduce an Open-Meteo OpenAPI document to the tracked contract."""
     (operation,) = spec["paths"].values()  # one endpoint per file
     parameters = operation["get"]["parameters"]
     contract: Contract = {"parameters": sorted(p["name"] for p in parameters)}
     for parameter in parameters:
-        if parameter["name"] not in TRACKED_ENUMS:
+        if parameter["name"] not in TRACKED_ENUMS + extra_enums:
             continue
         schema = parameter.get("schema", {})
         values = schema.get("enum") or schema.get("items", {}).get("enum")
@@ -72,7 +80,10 @@ def extract(spec: Mapping[str, Any]) -> Contract:
 
 def current() -> Snapshot:
     """Download the current upstream specifications."""
-    return {sid: extract(fetch_yaml(url)) for sid, url in SOURCES.items()}
+    return {
+        sid: extract(fetch_yaml(url), EXTRA_ENUMS.get(sid, ()))
+        for sid, url in SOURCES.items()
+    }
 
 
 def used() -> Snapshot:

@@ -11,7 +11,7 @@ from datetime import date
 
 import pytest
 
-from nabia import GeoPoint
+from nabia import GeoPoint, NoDataError, SourceKind, Variable
 from nabia.providers.open_meteo import ARCHIVE, FORECAST, OpenMeteoClient
 
 pytestmark = pytest.mark.live
@@ -52,3 +52,25 @@ def test_archive_daily_contract(client: OpenMeteoClient) -> None:
     )
     assert series.time == (START, END)
     assert set(series.values) == set(ARCHIVE.daily)
+
+
+def test_explicit_archive_source(client: OpenMeteoClient) -> None:
+    series = client.historical_daily(
+        MADRID, [Variable.PRECIPITATION], start=START, end=END, model="era5"
+    )
+    assert series.source == "era5"
+    assert series.source_kind is SourceKind.REANALYSIS
+    assert all(v is not None for v in series.values[Variable.PRECIPITATION])
+
+
+def test_source_without_the_variable_raises(client: OpenMeteoClient) -> None:
+    # Documents upstream behaviour seen on 2026-11-07: ERA5-Land returns
+    # no precipitation. If this starts passing data, update the README.
+    with pytest.raises(NoDataError):
+        client.historical_daily(
+            MADRID,
+            [Variable.PRECIPITATION],
+            start=START,
+            end=END,
+            model="era5_land",
+        )

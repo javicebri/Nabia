@@ -23,6 +23,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from nabia.catalog.units import Unit, can_convert, convert
 from nabia.catalog.variables import VARIABLES, Resolution, Variable
 from nabia.core.errors import (
+    NoDataError,
     ProviderContractError,
     UnitMismatchError,
     UnsupportedVariableError,
@@ -131,6 +132,7 @@ class VariableTable(BaseModel):
         variables: Sequence[Variable],
         columns: Mapping[str, RawColumn],
         reported_units: Mapping[str, str] | None,
+        source: str | None = None,
     ) -> dict[Variable, Values]:
         """Pick, verify and convert native columns to canonical values.
 
@@ -140,10 +142,12 @@ class VariableTable(BaseModel):
             columns: Native name to raw values, as returned upstream.
             reported_units: Native name to unit string, when the
                 provider reports units; ``None`` skips the unit check.
+            source: Selected model/product, used in error messages.
 
         Raises:
             ProviderContractError: A requested column is missing.
             UnitMismatchError: The reported unit differs from the table.
+            NoDataError: A non-empty column holds no value at all.
         """
         entries = self.entries(resolution)
         result: dict[Variable, Values] = {}
@@ -165,7 +169,17 @@ class VariableTable(BaseModel):
                         f"{native.unit.value!r}. Review the table.",
                         provider=self.provider,
                     )
+            column = columns[native.name]
+            if column and all(value is None for value in column):
+                origin = f" with source {source!r}" if source else ""
+                raise NoDataError(
+                    f"{self.provider}/{self.dataset}{origin} returned no "
+                    f"values for {variable.value} ({native.name!r}): the "
+                    "source may not provide it, or the period is not "
+                    "available yet.",
+                    provider=self.provider,
+                )
             result[variable] = convert(
-                columns[native.name], native.unit, VARIABLES[variable].unit
+                column, native.unit, VARIABLES[variable].unit
             )
         return result

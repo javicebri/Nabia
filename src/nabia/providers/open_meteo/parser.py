@@ -4,20 +4,31 @@ from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta, timezone, tzinfo
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from nabia.catalog import Resolution, Variable, VariableTable
 from nabia.core.errors import ProviderContractError
-from nabia.core.models import DailySeries, GeoPoint, HourlySeries
+from nabia.core.models import DailySeries, GeoPoint, HourlySeries, SourceKind
+from nabia.providers.open_meteo.mapping import ATTRIBUTION
 from nabia.providers.open_meteo.schemas import OpenMeteoResponse
 
 PROVIDER = "open_meteo"
+
+
+class Provenance(BaseModel):
+    """What is known about where a response's data come from."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    source: str | None = None
+    source_kind: SourceKind | None = None
 
 
 def parse_hourly(
     raw: OpenMeteoResponse,
     table: VariableTable,
     variables: Sequence[Variable],
+    provenance: Provenance,
 ) -> HourlySeries:
     """Build an :class:`HourlySeries` from a ``unixtime`` response.
 
@@ -28,6 +39,13 @@ def parse_hourly(
     if raw.hourly is None:
         raise _missing_block("hourly")
     zone = _zone(raw)
+    values = table.extract(
+        Resolution.HOURLY,
+        variables,
+        raw.hourly.columns,
+        raw.hourly_units,
+        source=provenance.source,
+    )
     try:
         return HourlySeries(
             provider=PROVIDER,
@@ -39,12 +57,10 @@ def parse_hourly(
                 datetime.fromtimestamp(ts, UTC).astimezone(zone)
                 for ts in raw.hourly.time
             ),
-            values=table.extract(
-                Resolution.HOURLY,
-                variables,
-                raw.hourly.columns,
-                raw.hourly_units,
-            ),
+            values=values,
+            source=provenance.source,
+            source_kind=provenance.source_kind,
+            attribution=ATTRIBUTION,
         )
     except ValidationError as exc:
         raise _invalid_series(exc) from None
@@ -54,10 +70,18 @@ def parse_daily(
     raw: OpenMeteoResponse,
     table: VariableTable,
     variables: Sequence[Variable],
+    provenance: Provenance,
 ) -> DailySeries:
     """Build a :class:`DailySeries` from an ``iso8601`` response."""
     if raw.daily is None:
         raise _missing_block("daily")
+    values = table.extract(
+        Resolution.DAILY,
+        variables,
+        raw.daily.columns,
+        raw.daily_units,
+        source=provenance.source,
+    )
     try:
         return DailySeries(
             provider=PROVIDER,
@@ -66,12 +90,10 @@ def parse_daily(
             elevation=raw.elevation,
             timezone=raw.timezone,
             time=tuple(raw.daily.time),
-            values=table.extract(
-                Resolution.DAILY,
-                variables,
-                raw.daily.columns,
-                raw.daily_units,
-            ),
+            values=values,
+            source=provenance.source,
+            source_kind=provenance.source_kind,
+            attribution=ATTRIBUTION,
         )
     except ValidationError as exc:
         raise _invalid_series(exc) from None

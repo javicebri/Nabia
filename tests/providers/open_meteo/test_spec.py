@@ -3,6 +3,7 @@
 Skipped when the snapshot has not been created on this machine.
 """
 
+from nabia.providers.open_meteo.mapping import ARCHIVE_SOURCES
 from tests.providers.open_meteo.spec import (
     KNOWN_SPEC_GAPS,
     REFRESH_COMMAND,
@@ -26,3 +27,11 @@ def test_known_gaps_are_still_gaps() -> None:
         "A known gap is now documented upstream; remove it from "
         "KNOWN_SPEC_GAPS"
     )
+
+
+def test_archive_source_kinds_cover_documented_sources() -> None:
+    # Every source we classify must exist upstream, and every upstream
+    # source (except the default) should be classified.
+    snapshot = snapshot_or_skip(SNAPSHOT, REFRESH_COMMAND)
+    documented = set(snapshot["archive"]["models"]) - {"best_match"}
+    assert set(ARCHIVE_SOURCES) == documented

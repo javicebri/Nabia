@@ -72,7 +72,24 @@ are used as a checker, not to generate code.
 
 `NabiaError` is the single root. Provider errors carry the provider id
 and a redacted URL. HTTP failures map to typed subclasses; schema or
-unit surprises map to `ProviderContractError`.
+unit surprises map to `ProviderContractError`. A requested variable
+with no value at all raises `NoDataError` (checked in
+`VariableTable.extract`, so every provider inherits it); partially
+missing values are returned as `None`.
+
+## Provenance
+
+Every series states what is known for certain about its origin:
+
+- `source`: model, product or station; `None` when the provider
+  chooses the source itself without reporting it.
+- `source_kind`: `forecast`, `analysis`, `reanalysis`,
+  `observation` or `satellite`; only `observation` is a measurement.
+  `None` when it cannot be stated for the whole series.
+- `attribution`: the credit line the data licence requires.
+
+Nabia never guesses provenance: it is filled only from explicit
+requests or from what the provider reports.
 
 ## Security model
 
@@ -99,4 +116,7 @@ unit surprises map to `ProviderContractError`.
 | 2026-11-07 | TLS via OS trust store by default; certifi fallback (Android). |
 | 2026-11-07 | First providers: Open-Meteo (reference), then AEMET, NASA POWER, Copernicus CDS/ADS/CLMS. |
 | 2026-11-07 | Published API specs watched as drift early warning; not used for code generation. |
+| 2026-11-07 | Provenance fields (`source`, `source_kind`, `attribution`) on every series; `analysis` kind added for operational analyses such as ECMWF IFS. |
+| 2026-11-07 | An entirely empty variable raises `NoDataError` instead of returning `None` values. |
+| 2026-11-07 | Open-Meteo: optional `model=` (default `best_match`, unchanged) and `elevation=`. |
 | 2026-11-07 | Spec snapshots stay local (git-ignored): development happens on one machine, nothing derived from upstream specs is published. |
