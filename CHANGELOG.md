@@ -9,6 +9,8 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-07
+
 ### Added
 
 - Variables `precipitation_probability` (hourly) and
