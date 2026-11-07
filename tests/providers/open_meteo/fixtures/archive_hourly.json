@@ -10,18 +10,19 @@
   "temperature_2m": "°C",
   "relative_humidity_2m": "%",
   "dew_point_2m": "°C",
+  "vapour_pressure_deficit": "kPa",
   "precipitation": "mm",
   "rain": "mm",
   "surface_pressure": "hPa",
   "pressure_msl": "hPa",
   "cloud_cover": "%",
   "wind_speed_10m": "m/s",
-  "wind_direction_10m": "°",
   "wind_gusts_10m": "m/s",
+  "wind_direction_10m": "°",
   "shortwave_radiation": "W/m²",
+  "sunshine_duration": "s",
   "et0_fao_evapotranspiration": "mm",
-  "vapour_pressure_deficit": "kPa",
-  "sunshine_duration": "s"
+  "global_tilted_irradiance": "W/m²"
  },
  "hourly": {
   "time": [
@@ -47,6 +48,12 @@
    5.1,
    4.2,
    4.4
+  ],
+  "vapour_pressure_deficit": [
+   0.06,
+   0.08,
+   0.08,
+   0.08
   ],
   "precipitation": [
    0.1,
@@ -84,19 +91,25 @@
    4.68,
    3.48
   ],
-  "wind_direction_10m": [
-   227,
-   221,
-   228,
-   219
-  ],
   "wind_gusts_10m": [
    8.5,
    9.6,
    8.5,
    8.2
   ],
+  "wind_direction_10m": [
+   227,
+   221,
+   228,
+   219
+  ],
   "shortwave_radiation": [
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "sunshine_duration": [
    0.0,
    0.0,
    0.0,
@@ -108,13 +121,7 @@
    0.01,
    0.01
   ],
-  "vapour_pressure_deficit": [
-   0.06,
-   0.08,
-   0.08,
-   0.08
-  ],
-  "sunshine_duration": [
+  "global_tilted_irradiance": [
    0.0,
    0.0,
    0.0,

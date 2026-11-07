@@ -11,7 +11,13 @@ from pydantic import Field, ValidationError, validate_call
 from nabia.catalog import Resolution, Variable, VariableTable
 from nabia.core.config import NabiaSettings
 from nabia.core.http import HttpClient, Params
-from nabia.core.models import DailySeries, GeoPoint, HourlySeries, SourceKind
+from nabia.core.models import (
+    DailySeries,
+    GeoPoint,
+    HourlySeries,
+    SourceKind,
+    Surface,
+)
 from nabia.providers.base import BaseClient
 from nabia.providers.open_meteo.config import OpenMeteoSettings
 from nabia.providers.open_meteo.mapping import (
@@ -20,6 +26,7 @@ from nabia.providers.open_meteo.mapping import (
     DEFAULT_MODEL,
     FORECAST,
     UNIT_PARAMS,
+    to_azimuth,
 )
 from nabia.providers.open_meteo.parser import (
     Provenance,
@@ -53,6 +60,7 @@ class _Query:
     timezone: str
     model: str | None
     elevation: float | None
+    surface: Surface | None = None
 
 
 class OpenMeteoClient(BaseClient):
@@ -100,6 +108,7 @@ class OpenMeteoClient(BaseClient):
         timezone: TimeZone = "auto",
         model: Model | None = None,
         elevation: Elevation | None = None,
+        surface: Surface | None = None,
     ) -> HourlySeries:
         """Return an hourly forecast.
 
@@ -116,9 +125,17 @@ class OpenMeteoClient(BaseClient):
             elevation: Altitude of the point in metres. By default
                 Open-Meteo takes it from a 90 m terrain model; it is
                 used to pick the grid cell and correct temperatures.
+            surface: Slope and compass orientation that
+                ``SHORTWAVE_RADIATION_TILTED`` refers to; required
+                for that variable and ignored otherwise.
         """
         query = _Query(
-            location, _unique(variables), timezone, model, elevation
+            location,
+            _unique(variables),
+            timezone,
+            model,
+            elevation,
+            surface,
         )
         extra = {"forecast_days": days, "past_days": past_days}
         return self._hourly(
@@ -155,6 +172,7 @@ class OpenMeteoClient(BaseClient):
         timezone: TimeZone = "auto",
         model: Model | None = None,
         elevation: Elevation | None = None,
+        surface: Surface | None = None,
     ) -> HourlySeries:
         """Return hourly historical data (reanalysis and analyses).
 
@@ -171,9 +189,17 @@ class OpenMeteoClient(BaseClient):
                 reporting it, so long series may mix sources.
             elevation: Altitude of the point in metres (see
                 :meth:`forecast_hourly`).
+            surface: Slope and compass orientation that
+                ``SHORTWAVE_RADIATION_TILTED`` refers to; required
+                for that variable and ignored otherwise.
         """
         query = _Query(
-            location, _unique(variables), timezone, model, elevation
+            location,
+            _unique(variables),
+            timezone,
+            model,
+            elevation,
+            surface,
         )
         extra = _date_range(start, end)
         return self._hourly(ARCHIVE, self._settings.archive_url, query, extra)
@@ -207,15 +233,21 @@ class OpenMeteoClient(BaseClient):
         extra: Params,
     ) -> HourlySeries:
         names = table.native_names(Resolution.HOURLY, query.variables)
+        surface = _tilted_surface(query)
         params = {
             **_base_params(query),
             **extra,
             "hourly": ",".join(names),
             "timeformat": "unixtime",
         }
+        if surface is not None:
+            params["tilt"] = str(surface.tilt)
+            params["azimuth"] = str(to_azimuth(surface.aspect))
         raw = self._http.get_model(OpenMeteoResponse, url, params=params)
         provenance = _provenance(table, query.model)
-        return parse_hourly(raw, table, query.variables, provenance)
+        return parse_hourly(
+            raw, table, query.variables, provenance, surface=surface
+        )
 
     def _daily(
         self,
@@ -248,6 +280,18 @@ def _base_params(query: _Query) -> dict[str, str]:
     if query.elevation is not None:
         params["elevation"] = str(query.elevation)
     return params
+
+
+def _tilted_surface(query: _Query) -> Surface | None:
+    # The surface only matters when a tilted variable is requested.
+    if Variable.SHORTWAVE_RADIATION_TILTED not in query.variables:
+        return None
+    if query.surface is None:
+        raise ValueError(
+            f"{Variable.SHORTWAVE_RADIATION_TILTED.value} requires "
+            "surface=Surface(tilt=..., aspect=...)"
+        )
+    return query.surface
 
 
 def _provenance(table: VariableTable, model: str | None) -> Provenance:

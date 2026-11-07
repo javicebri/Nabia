@@ -3,8 +3,9 @@
 Units are pinned with :data:`UNIT_PARAMS` so the tables stay valid
 regardless of Open-Meteo defaults (e.g. wind speed in km/h).
 
-The forecast and historical (archive) endpoints share these names and
-units; both were verified against the live API on ``VERIFIED_ON``.
+The forecast and historical (archive) endpoints share most names and
+units; precipitation probability exists in the forecast only. Both
+were verified against the live API on ``VERIFIED_ON``.
 When an entry changes upstream, update it here, run
 ``uv run pytest -m live`` and bump ``VERIFIED_ON``.
 """
@@ -40,6 +41,22 @@ ARCHIVE_SOURCES: MappingProxyType[str, SourceKind] = MappingProxyType(
         "ecmwf_ifs_analysis_long_window": SourceKind.ANALYSIS,
     }
 )
+
+
+def to_azimuth(aspect: float) -> float:
+    """Translate a compass aspect into Open-Meteo's ``azimuth``.
+
+    Open-Meteo measures from the south: 0 = south, -90 = east,
+    90 = west, +-180 = north, and rejects values outside -180..180.
+    Verified on 2026-11-07 by comparing radiation on opposite slopes
+    (its published specification states a north-based convention,
+    which the live API does not follow).
+
+    Args:
+        aspect: Compass direction the surface faces, 0 <= aspect < 360.
+    """
+    return aspect - 180.0
+
 
 #: Query parameters that pin the units reported by Open-Meteo.
 UNIT_PARAMS: MappingProxyType[str, str] = MappingProxyType(
@@ -104,6 +121,20 @@ _HOURLY = {
     Variable.REFERENCE_EVAPOTRANSPIRATION: NativeVariable(
         name="et0_fao_evapotranspiration", unit=Unit.MILLIMETRE
     ),
+    Variable.SHORTWAVE_RADIATION_TILTED: NativeVariable(
+        name="global_tilted_irradiance",
+        unit=Unit.WATT_PER_SQUARE_METRE,
+        notes="Mean of the preceding hour; needs tilt and azimuth.",
+    ),
+}
+
+_FORECAST_HOURLY = {
+    **_HOURLY,
+    Variable.PRECIPITATION_PROBABILITY: NativeVariable(
+        name="precipitation_probability",
+        unit=Unit.PERCENT,
+        notes="Forecast only; for the preceding hour.",
+    ),
 }
 
 _DAILY = {
@@ -145,13 +176,22 @@ _DAILY = {
     ),
 }
 
+_FORECAST_DAILY = {
+    **_DAILY,
+    Variable.PRECIPITATION_PROBABILITY_MAX: NativeVariable(
+        name="precipitation_probability_max",
+        unit=Unit.PERCENT,
+        notes="Forecast only; daily maximum of the hourly values.",
+    ),
+}
+
 FORECAST = VariableTable(
     provider="open_meteo",
     dataset="forecast",
     reference_url="https://open-meteo.com/en/docs",
     verified_on=VERIFIED_ON,
-    hourly=_HOURLY,
-    daily=_DAILY,
+    hourly=_FORECAST_HOURLY,
+    daily=_FORECAST_DAILY,
 )
 
 ARCHIVE = VariableTable(

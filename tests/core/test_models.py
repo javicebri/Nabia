@@ -12,6 +12,7 @@ from nabia import (
     MissingDependencyError,
     Resolution,
     SourceKind,
+    Surface,
     Unit,
     Variable,
 )
@@ -129,3 +130,11 @@ def test_dataframe_carries_provenance() -> None:
     assert attrs["source"] == "era5"
     assert attrs["source_kind"] == "reanalysis"
     assert attrs["attribution"] == "Data by X"
+
+
+def test_tilted_values_require_the_surface() -> None:
+    tilted = {Variable.SHORTWAVE_RADIATION_TILTED: (100.0, 200.0)}
+    with pytest.raises(ValidationError, match="surface"):
+        hourly(values=tilted)
+    series = hourly(values=tilted, surface=Surface(tilt=30, aspect=0))
+    assert series.surface == Surface(tilt=30, aspect=0)

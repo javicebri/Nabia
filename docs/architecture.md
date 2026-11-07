@@ -6,6 +6,15 @@ Nabia is an intermediary between consumer projects and public data
 APIs. Upstream APIs change; consumer code should not. All adaptation
 happens inside Nabia, which is versioned and installed from Git tags.
 
+### Scope rules
+
+- Only free data sources; a free registration for an API key is
+  acceptable, paid or subscription plans are not.
+- No geocoding or place search.
+- Nabia returns what the provider delivers: it normalizes names,
+  units, time zones and request parameters (e.g. orientation
+  conventions) but never computes, estimates or derives data.
+
 ## Layers
 
 ```text
@@ -119,4 +128,6 @@ requests or from what the provider reports.
 | 2026-11-07 | Provenance fields (`source`, `source_kind`, `attribution`) on every series; `analysis` kind added for operational analyses such as ECMWF IFS. |
 | 2026-11-07 | An entirely empty variable raises `NoDataError` instead of returning `None` values. |
 | 2026-11-07 | Open-Meteo: optional `model=` (default `best_match`, unchanged) and `elevation=`. |
+| 2026-11-07 | Scope rules: free sources only, no geocoding, no computed or derived data. |
+| 2026-11-07 | Precipitation probability (forecast) and tilted irradiance added; surfaces use a compass aspect (0 = north) translated per provider. |
 | 2026-11-07 | Spec snapshots stay local (git-ignored): development happens on one machine, nothing derived from upstream specs is published. |

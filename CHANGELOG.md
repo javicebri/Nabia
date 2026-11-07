@@ -9,6 +9,15 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+### Added
+
+- Variables `precipitation_probability` (hourly) and
+  `precipitation_probability_max` (daily), forecast only, with the
+  new `probability` aggregation.
+- Variable `shortwave_radiation_tilted` (hourly) and the `Surface`
+  model (tilt and compass aspect). Series holding it record the
+  surface. Open-Meteo's south-based azimuth is translated.
+
 ## [0.2.0] - 2026-11-07
 
 ### Added

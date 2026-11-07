@@ -62,6 +62,21 @@ class GeoPoint(NabiaModel):
     longitude: float = Field(ge=-180.0, le=180.0)
 
 
+class Surface(NabiaModel):
+    """Inclined surface, e.g. a slope, for plane-of-array variables.
+
+    Attributes:
+        tilt: Inclination from the horizontal in degrees (0 = flat,
+            90 = vertical).
+        aspect: Compass direction the surface faces, in degrees
+            clockwise from north (0 = north, 90 = east, 180 = south,
+            270 = west). Providers' own conventions are translated.
+    """
+
+    tilt: float = Field(ge=0.0, le=90.0)
+    aspect: float = Field(ge=0.0, lt=360.0)
+
+
 def _catalog_units(data: dict[str, Any]) -> dict[Variable, Unit]:
     """Canonical units for the variables in already-validated data."""
     values = data.get("values", {})
@@ -99,6 +114,8 @@ class TimeSeries[TimeT: date](NabiaModel):
             the whole series.
         attribution: Credit line the provider's licence requires
             applications to display, if any.
+        surface: Inclined surface that tilted variables refer to;
+            required when the series holds one.
     """
 
     provider: str
@@ -112,9 +129,14 @@ class TimeSeries[TimeT: date](NabiaModel):
     source: str | None = None
     source_kind: SourceKind | None = None
     attribution: str | None = None
+    surface: Surface | None = None
 
     @model_validator(mode="after")
     def _check_axis(self) -> Self:
+        if Variable.SHORTWAVE_RADIATION_TILTED in self.values and (
+            self.surface is None
+        ):
+            raise ValueError("Tilted variables require the surface")
         expected_units = _catalog_units({"values": self.values})
         if self.units != expected_units:
             raise ValueError(

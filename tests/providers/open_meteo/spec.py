@@ -19,7 +19,7 @@ from typing import Any
 
 import respx
 
-from nabia import GeoPoint, NabiaSettings
+from nabia import GeoPoint, NabiaSettings, Surface
 from nabia.providers.open_meteo import ARCHIVE, FORECAST, OpenMeteoClient
 from tests.specs import Contract, Snapshot, fetch_yaml, save_snapshot
 
@@ -94,30 +94,27 @@ def used() -> Snapshot:
     """
     point = GeoPoint(latitude=0.0, longitude=0.0)
     day = date(2024, 3, 31)
-    hourly = _fixture("archive_hourly.json")
-    daily = _fixture("archive_daily.json")
-    sent: dict[str, list[dict[str, str]]] = {"forecast": [], "archive": []}
+    surface = Surface(tilt=30, aspect=180)
+    sent: dict[str, list[dict[str, str]]] = {}
     with (
         respx.mock(assert_all_called=False) as router,
         OpenMeteoClient(nabia_settings=NabiaSettings(max_retries=0)) as c,
     ):
-        for spec_id, url in (
-            ("forecast", "https://api.open-meteo.com/v1/forecast"),
-            ("archive", "https://archive-api.open-meteo.com/v1/archive"),
-        ):
-            route = router.get(url).respond(200, json=hourly)
-            if spec_id == "forecast":
-                c.forecast_hourly(point, list(FORECAST.hourly))
-                route.respond(200, json=daily)
-                c.forecast_daily(point, list(FORECAST.daily))
-            else:
-                c.historical_hourly(
-                    point, list(ARCHIVE.hourly), start=day, end=day
-                )
-                route.respond(200, json=daily)
-                c.historical_daily(
-                    point, list(ARCHIVE.daily), start=day, end=day
-                )
+        forecast = router.get("https://api.open-meteo.com/v1/forecast")
+        forecast.respond(200, json=_fixture("forecast_hourly.json"))
+        c.forecast_hourly(point, list(FORECAST.hourly), surface=surface)
+        forecast.respond(200, json=_fixture("forecast_daily.json"))
+        c.forecast_daily(point, list(FORECAST.daily))
+
+        archive = router.get("https://archive-api.open-meteo.com/v1/archive")
+        archive.respond(200, json=_fixture("archive_hourly.json"))
+        c.historical_hourly(
+            point, list(ARCHIVE.hourly), start=day, end=day, surface=surface
+        )
+        archive.respond(200, json=_fixture("archive_daily.json"))
+        c.historical_daily(point, list(ARCHIVE.daily), start=day, end=day)
+
+        for spec_id, route in (("forecast", forecast), ("archive", archive)):
             sent[spec_id] = [
                 dict(call.request.url.params) for call in route.calls
             ]

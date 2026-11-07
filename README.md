@@ -88,6 +88,20 @@ a system interpreter without Nabia fails with
 Requesting a variable a provider does not offer raises
 `UnsupportedVariableError` before any network call.
 
+Radiation on an inclined surface needs the surface, given as tilt
+and compass aspect (0 = north, 90 = east, 180 = south, 270 = west);
+Nabia translates it to each provider's convention:
+
+```python
+from nabia import Surface
+
+client.forecast_hourly(
+    point,
+    [Variable.SHORTWAVE_RADIATION_TILTED],
+    surface=Surface(tilt=30, aspect=0),  # 30 degree slope facing north
+)
+```
+
 ## Configuration
 
 Settings come from environment variables or a `.env` file in the

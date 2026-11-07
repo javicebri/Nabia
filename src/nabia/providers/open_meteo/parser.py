@@ -8,7 +8,13 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from nabia.catalog import Resolution, Variable, VariableTable
 from nabia.core.errors import ProviderContractError
-from nabia.core.models import DailySeries, GeoPoint, HourlySeries, SourceKind
+from nabia.core.models import (
+    DailySeries,
+    GeoPoint,
+    HourlySeries,
+    SourceKind,
+    Surface,
+)
 from nabia.providers.open_meteo.mapping import ATTRIBUTION
 from nabia.providers.open_meteo.schemas import OpenMeteoResponse
 
@@ -29,6 +35,7 @@ def parse_hourly(
     table: VariableTable,
     variables: Sequence[Variable],
     provenance: Provenance,
+    surface: Surface | None = None,
 ) -> HourlySeries:
     """Build an :class:`HourlySeries` from a ``unixtime`` response.
 
@@ -61,6 +68,7 @@ def parse_hourly(
             source=provenance.source,
             source_kind=provenance.source_kind,
             attribution=ATTRIBUTION,
+            surface=surface,
         )
     except ValidationError as exc:
         raise _invalid_series(exc) from None

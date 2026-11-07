@@ -56,6 +56,18 @@ Open-Meteo measures nothing itself: it serves model output.
 
 ## Quirks (verified 2026-11-07)
 
+- **Azimuth convention.** For `global_tilted_irradiance` Open-Meteo
+  measures orientation from the south: 0 = south, -90 = east,
+  90 = west, +-180 = north, and rejects values outside -180..180.
+  Its published specification says "North=0, East=90, South=180",
+  which the live API does not follow (checked by comparing radiation
+  on opposite slopes and on east/west slopes morning vs afternoon).
+  Nabia takes a compass `Surface.aspect` and sends `aspect - 180`;
+  a live test guards the convention.
+- **Precipitation probability** exists in the forecast only. The
+  daily value is the maximum of the hourly probabilities, not the
+  probability of precipitation over the day.
+
 - **Fixed UTC offset per response.** Open-Meteo applies the offset of
   the start of the range to the whole response, even across a DST
   change: a 2-day request starting in CET returns 48 consecutive UTC

@@ -33,7 +33,11 @@ class Resolution(StrEnum):
 
 
 class Aggregation(StrEnum):
-    """How a value relates to its time interval."""
+    """How a value relates to its time interval.
+
+    ``PROBABILITY`` is the chance that an event happens within the
+    interval.
+    """
 
     INSTANT = "instant"
     MEAN = "mean"
@@ -41,6 +45,7 @@ class Aggregation(StrEnum):
     MAXIMUM = "maximum"
     MINIMUM = "minimum"
     DOMINANT = "dominant"
+    PROBABILITY = "probability"
 
 
 class Variable(StrEnum):
@@ -55,6 +60,8 @@ class Variable(StrEnum):
     DEW_POINT = "dew_point"
     VAPOUR_PRESSURE_DEFICIT = "vapour_pressure_deficit"
     PRECIPITATION = "precipitation"
+    PRECIPITATION_PROBABILITY = "precipitation_probability"
+    PRECIPITATION_PROBABILITY_MAX = "precipitation_probability_max"
     RAIN = "rain"
     SURFACE_PRESSURE = "surface_pressure"
     SEA_LEVEL_PRESSURE = "sea_level_pressure"
@@ -67,6 +74,7 @@ class Variable(StrEnum):
     WIND_DIRECTION_DOMINANT = "wind_direction_dominant"
     SHORTWAVE_RADIATION = "shortwave_radiation"
     SHORTWAVE_RADIATION_SUM = "shortwave_radiation_sum"
+    SHORTWAVE_RADIATION_TILTED = "shortwave_radiation_tilted"
     SUNSHINE_DURATION = "sunshine_duration"
     REFERENCE_EVAPOTRANSPIRATION = "reference_evapotranspiration"
 
@@ -159,6 +167,21 @@ VARIABLES: MappingProxyType[Variable, VariableSpec] = MappingProxyType(
             "Total precipitation (rain, showers, snow water equivalent)"
             " accumulated over the interval.",
         ),
+        Variable.PRECIPITATION_PROBABILITY: _spec(
+            Unit.PERCENT,
+            Aggregation.PROBABILITY,
+            _H,
+            "Forecast probability that precipitation occurs within the"
+            " interval.",
+        ),
+        Variable.PRECIPITATION_PROBABILITY_MAX: _spec(
+            Unit.PERCENT,
+            Aggregation.MAXIMUM,
+            _D,
+            "Highest hourly precipitation probability within the"
+            " interval. It is not the probability of precipitation over"
+            " the whole interval.",
+        ),
         Variable.RAIN: _spec(
             Unit.MILLIMETRE,
             Aggregation.SUM,
@@ -224,6 +247,14 @@ VARIABLES: MappingProxyType[Variable, VariableSpec] = MappingProxyType(
             Aggregation.MEAN,
             _H,
             "Global horizontal irradiance, mean over the interval.",
+        ),
+        Variable.SHORTWAVE_RADIATION_TILTED: _spec(
+            Unit.WATT_PER_SQUARE_METRE,
+            Aggregation.MEAN,
+            _H,
+            "Global irradiance on an inclined surface (direct, diffuse"
+            " and reflected), mean over the interval. The surface is"
+            " recorded in the series.",
         ),
         Variable.SHORTWAVE_RADIATION_SUM: _spec(
             Unit.MEGAJOULE_PER_SQUARE_METRE,

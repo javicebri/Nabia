@@ -1,0 +1,82 @@
+{
+ "latitude": 40.39599,
+ "longitude": -3.6793447,
+ "utc_offset_seconds": 3600,
+ "timezone": "Europe/Madrid",
+ "timezone_abbreviation": "GMT+1",
+ "elevation": 667.0,
+ "daily_units": {
+  "time": "iso8601",
+  "temperature_2m_mean": "°C",
+  "temperature_2m_max": "°C",
+  "temperature_2m_min": "°C",
+  "relative_humidity_2m_mean": "%",
+  "precipitation_sum": "mm",
+  "rain_sum": "mm",
+  "wind_speed_10m_max": "m/s",
+  "wind_gusts_10m_max": "m/s",
+  "wind_direction_10m_dominant": "°",
+  "shortwave_radiation_sum": "MJ/m²",
+  "sunshine_duration": "s",
+  "et0_fao_evapotranspiration": "mm",
+  "precipitation_probability_max": "%"
+ },
+ "daily": {
+  "time": [
+   "2026-11-07",
+   "2026-11-08"
+  ],
+  "temperature_2m_mean": [
+   11.6,
+   11.2
+  ],
+  "temperature_2m_max": [
+   16.1,
+   15.3
+  ],
+  "temperature_2m_min": [
+   8.3,
+   7.6
+  ],
+  "relative_humidity_2m_mean": [
+   66,
+   77
+  ],
+  "precipitation_sum": [
+   0.4,
+   0.2
+  ],
+  "rain_sum": [
+   0.4,
+   0.2
+  ],
+  "wind_speed_10m_max": [
+   1.36,
+   2.19
+  ],
+  "wind_gusts_10m_max": [
+   3.2,
+   6.6
+  ],
+  "wind_direction_10m_dominant": [
+   81,
+   36
+  ],
+  "shortwave_radiation_sum": [
+   8.03,
+   5.02
+  ],
+  "sunshine_duration": [
+   31269.32,
+   491.99
+  ],
+  "et0_fao_evapotranspiration": [
+   1.28,
+   0.99
+  ],
+  "precipitation_probability_max": [
+   55,
+   13
+  ]
+ }
+}

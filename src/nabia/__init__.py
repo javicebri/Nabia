@@ -32,6 +32,7 @@ from nabia.core.models import (
     GeoPoint,
     HourlySeries,
     SourceKind,
+    Surface,
     TimeSeries,
 )
 
@@ -53,6 +54,7 @@ __all__ = [
     "RateLimitError",
     "Resolution",
     "SourceKind",
+    "Surface",
     "TimeSeries",
     "Unit",
     "UnitConversionError",

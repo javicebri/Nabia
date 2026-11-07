@@ -39,6 +39,13 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
 
 ## Rules
 
+- **Scope (agreed with the user)**:
+  - Free data only: no paid or subscription services (a free
+    registration to obtain an API key is fine).
+  - No geocoding or place search.
+  - Raw provider data only: normalize names, units, time zones and
+    request parameters, but never compute, estimate or derive data
+    (no models, balances or derived variables).
 - **Ask before inferring**: unclear API semantics, units, new
   dependencies or public API changes are the user's decision.
 - PEP 8 (79 cols, docstrings 72), Google docstrings, English comments,

@@ -22,11 +22,13 @@ from nabia import (
     ProviderContractError,
     ProviderHTTPError,
     SourceKind,
+    Surface,
     UnitMismatchError,
     UnsupportedVariableError,
     Variable,
 )
 from nabia.providers.open_meteo import (
+    ARCHIVE,
     FORECAST,
     OpenMeteoClient,
     OpenMeteoSettings,
@@ -43,6 +45,8 @@ FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 MADRID = GeoPoint(latitude=40.42, longitude=-3.70)
 DAY = date(2024, 3, 31)
+SOUTH_SLOPE = Surface(tilt=30, aspect=180)
+TILTED = Variable.SHORTWAVE_RADIATION_TILTED
 
 
 def load(name: str) -> dict[str, Any]:
@@ -139,19 +143,40 @@ def test_forecast_daily_accepts_variable_names(
     assert series.variables == (Variable.AIR_TEMPERATURE_MAX,)
 
 
-def test_every_mapped_variable_parses_from_fixture(
+def test_every_forecast_variable_parses_from_fixture(
     client: OpenMeteoClient, respx_mock: respx.MockRouter
 ) -> None:
     respx_mock.get(FORECAST_URL).mock(
+        side_effect=[
+            httpx.Response(200, json=load("forecast_hourly.json")),
+            httpx.Response(200, json=load("forecast_daily.json")),
+        ]
+    )
+    hourly = client.forecast_hourly(
+        MADRID, list(FORECAST.hourly), surface=SOUTH_SLOPE
+    )
+    daily = client.forecast_daily(MADRID, list(FORECAST.daily))
+    assert set(hourly.values) == set(FORECAST.hourly)
+    assert set(daily.values) == set(FORECAST.daily)
+
+
+def test_every_archive_variable_parses_from_fixture(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    respx_mock.get(ARCHIVE_URL).mock(
         side_effect=[
             httpx.Response(200, json=load("archive_hourly.json")),
             httpx.Response(200, json=load("archive_daily.json")),
         ]
     )
-    hourly = client.forecast_hourly(MADRID, list(FORECAST.hourly))
-    daily = client.forecast_daily(MADRID, list(FORECAST.daily))
-    assert set(hourly.values) == set(FORECAST.hourly)
-    assert set(daily.values) == set(FORECAST.daily)
+    hourly = client.historical_hourly(
+        MADRID, list(ARCHIVE.hourly), start=DAY, end=DAY, surface=SOUTH_SLOPE
+    )
+    daily = client.historical_daily(
+        MADRID, list(ARCHIVE.daily), start=DAY, end=DAY
+    )
+    assert set(hourly.values) == set(ARCHIVE.hourly)
+    assert set(daily.values) == set(ARCHIVE.daily)
 
 
 def test_custom_endpoint(respx_mock: respx.MockRouter) -> None:
@@ -364,3 +389,79 @@ def test_partially_missing_values_are_kept(
         MADRID, [Variable.PRECIPITATION], start=DAY, end=DAY
     )
     assert series.values[Variable.PRECIPITATION] == (None, 2.5)
+
+
+# -- tilted surfaces and forecast-only variables -------------
+
+
+def test_tilted_variable_requires_a_surface(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    with pytest.raises(ValueError, match="requires surface"):
+        client.forecast_hourly(MADRID, [TILTED])
+    assert not respx_mock.calls
+
+
+@pytest.mark.parametrize(
+    ("aspect", "azimuth"),
+    [(0, "-180.0"), (90, "-90.0"), (180, "0.0"), (270, "90.0")],
+)
+def test_compass_aspect_is_translated(
+    client: OpenMeteoClient,
+    respx_mock: respx.MockRouter,
+    aspect: float,
+    azimuth: str,
+) -> None:
+    route = respx_mock.get(FORECAST_URL).respond(
+        200, json=load("forecast_hourly.json")
+    )
+    surface = Surface(tilt=30, aspect=aspect)
+    series = client.forecast_hourly(MADRID, [TILTED], surface=surface)
+    params = params_of(route)
+    assert params["tilt"] == "30.0"
+    assert params["azimuth"] == azimuth
+    assert series.surface == surface
+
+
+def test_surface_is_ignored_without_tilted_variable(
+    client: OpenMeteoClient, respx_mock: respx.MockRouter
+) -> None:
+    route = respx_mock.get(FORECAST_URL).respond(
+        200, json=load("forecast_hourly.json")
+    )
+    series = client.forecast_hourly(
+        MADRID, [Variable.AIR_TEMPERATURE], surface=SOUTH_SLOPE
+    )
+    assert "tilt" not in params_of(route)
+    assert series.surface is None
+
+
+@pytest.mark.parametrize(
+    "surface", [{"tilt": 91, "aspect": 0}, {"tilt": 30, "aspect": 360}]
+)
+def test_surface_is_validated(
+    client: OpenMeteoClient, surface: dict[str, float]
+) -> None:
+    with pytest.raises(ValidationError):
+        client.forecast_hourly(
+            MADRID,
+            [TILTED],
+            surface=surface,  # type: ignore[arg-type]
+        )
+
+
+def test_precipitation_probability_is_forecast_only(
+    client: OpenMeteoClient,
+) -> None:
+    with pytest.raises(UnsupportedVariableError):
+        client.historical_hourly(
+            MADRID,
+            [Variable.PRECIPITATION_PROBABILITY],
+            start=DAY,
+            end=DAY,
+        )
+
+
+def test_tilted_radiation_is_hourly_only(client: OpenMeteoClient) -> None:
+    with pytest.raises(UnsupportedVariableError):
+        client.forecast_daily(MADRID, [TILTED])
