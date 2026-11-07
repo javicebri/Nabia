@@ -126,9 +126,16 @@
         "provider",
         "dataset",
         "location",
+        "elevation",
         "timezone",
         "time",
-        "values"
+        "values",
+        "units",
+        "source",
+        "source_kind",
+        "attribution",
+        "surface",
+        "resolution"
       ],
       "title": "DailySeries",
       "type": "object"
@@ -283,9 +290,16 @@
         "provider",
         "dataset",
         "location",
+        "elevation",
         "timezone",
         "time",
-        "values"
+        "values",
+        "units",
+        "source",
+        "source_kind",
+        "attribution",
+        "surface",
+        "resolution"
       ],
       "title": "HourlySeries",
       "type": "object"

@@ -69,6 +69,52 @@ def test_retry_after_header_is_honoured(respx_mock: respx.MockRouter) -> None:
     assert sleeps == [2.0]
 
 
+def test_long_retry_after_caps_sleep_but_not_error(
+    respx_mock: respx.MockRouter,
+) -> None:
+    respx_mock.get(URL).respond(429, headers={"Retry-After": "120"})
+    sleeps: list[float] = []
+    with (
+        make_client(sleeps=sleeps, retries=1) as client,
+        pytest.raises(RateLimitError) as e,
+    ):
+        client.get(URL)
+    assert sleeps == [30.0]  # internal wait is capped
+    assert e.value.retry_after == 120.0  # the caller sees the real wait
+
+
+def test_date_retry_after_falls_back_to_backoff(
+    respx_mock: respx.MockRouter,
+) -> None:
+    date = "Wed, 21 Oct 2026 07:28:00 GMT"
+    respx_mock.get(URL).respond(429, headers={"Retry-After": date})
+    sleeps: list[float] = []
+    with (
+        make_client(sleeps=sleeps, retries=1) as client,
+        pytest.raises(RateLimitError) as e,
+    ):
+        client.get(URL)
+    assert len(sleeps) == 1
+    assert 0.5 <= sleeps[0] <= 1.0  # first backoff step plus jitter
+    assert e.value.retry_after is None
+    assert client.provider == "test"
+
+
+def test_zero_retry_after_retries_immediately(
+    respx_mock: respx.MockRouter,
+) -> None:
+    respx_mock.get(URL).mock(
+        side_effect=[
+            httpx.Response(429, headers={"Retry-After": "0"}),
+            httpx.Response(200, content=b"ok"),
+        ]
+    )
+    sleeps: list[float] = []
+    with make_client(sleeps=sleeps) as client:
+        client.get(URL)
+    assert sleeps == [0.0]
+
+
 def test_rate_limit_after_retries(respx_mock: respx.MockRouter) -> None:
     respx_mock.get(URL).respond(429, headers={"Retry-After": "7"})
     with make_client(retries=1) as client, pytest.raises(RateLimitError) as e:

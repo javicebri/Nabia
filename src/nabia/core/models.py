@@ -50,9 +50,17 @@ class SourceKind(StrEnum):
 
 
 class NabiaModel(BaseModel):
-    """Base for output models: immutable, no unknown fields."""
+    """Base for output models: immutable, no unknown fields.
 
-    model_config = ConfigDict(frozen=True, extra="forbid")
+    Serialization always emits every field, so the serialization JSON
+    Schema marks fields with defaults as required too.
+    """
+
+    model_config = ConfigDict(
+        frozen=True,
+        extra="forbid",
+        json_schema_serialization_defaults_required=True,
+    )
 
 
 class GeoPoint(NabiaModel):

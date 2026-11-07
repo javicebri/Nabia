@@ -221,7 +221,14 @@ class HttpClient:
                 continue
 
             if response.status_code in RETRYABLE_STATUS and not last_attempt:
-                delay = _retry_after(response) or _backoff_delay(attempt)
+                requested = _retry_after(response)
+                # Never sleep longer than the cap: a long wait is the
+                # caller's decision, made from the raised error.
+                delay = (
+                    _backoff_delay(attempt)
+                    if requested is None
+                    else min(requested, _BACKOFF_CAP_SECONDS)
+                )
                 logger.warning(
                     "%s: HTTP %d, retrying in %.1fs",
                     self._provider,
@@ -308,6 +315,7 @@ def _backoff_delay(attempt: int) -> float:
 
 
 def _retry_after(response: httpx.Response) -> float | None:
+    """Return the wait the provider requested, in seconds, uncapped."""
     value = response.headers.get("Retry-After")
     if value is None:
         return None
@@ -315,4 +323,4 @@ def _retry_after(response: httpx.Response) -> float | None:
         seconds = float(value)
     except ValueError:  # HTTP-date form is rare for APIs; use backoff
         return None
-    return max(0.0, min(seconds, _BACKOFF_CAP_SECONDS))
+    return max(0.0, seconds)

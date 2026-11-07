@@ -4,7 +4,7 @@
   "cases": [
     {
       "name": "historical_daily",
-      "description": "Daily archive request; sunshine converted from s to h.",
+      "description": "Daily archive request; sunshine converted from s to h; the default model claims no source.",
       "call": {
         "operation": "historical_daily",
         "location": {
@@ -22,6 +22,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -153,7 +154,7 @@
     },
     {
       "name": "historical_hourly_dst",
-      "description": "Unix timestamps expressed in the response zone across the 2024-03-31 daylight saving change (offset +01:00 -> +02:00).",
+      "description": "Unix timestamps expressed in the response zone across the daylight saving change (offset +01:00 -> +02:00).",
       "call": {
         "operation": "historical_hourly",
         "location": {
@@ -170,6 +171,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -373,6 +375,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -557,7 +560,7 @@
     },
     {
       "name": "forecast_hourly_all_variables",
-      "description": "Every hourly forecast variable, tilted irradiance on a south-facing slope.",
+      "description": "Every hourly forecast variable; tilted irradiance on a south-facing slope.",
       "call": {
         "operation": "forecast_hourly",
         "location": {
@@ -592,6 +595,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.39599,
           "longitude": -3.6793447,
@@ -926,6 +930,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.39599,
           "longitude": -3.6793447,
@@ -1117,7 +1122,7 @@
     },
     {
       "name": "historical_hourly_all_variables",
-      "description": "Every hourly archive variable, tilted irradiance on a south-facing slope.",
+      "description": "Every hourly archive variable; tilted irradiance on a south-facing slope.",
       "call": {
         "operation": "historical_hourly",
         "location": {
@@ -1153,6 +1158,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -1475,6 +1481,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -1656,7 +1663,7 @@
     },
     {
       "name": "historical_daily_explicit_best_match",
-      "description": "The default model hides the source: nothing is claimed.",
+      "description": "The default model is sent but hides the source: nothing is claimed.",
       "call": {
         "operation": "historical_daily",
         "location": {
@@ -1674,6 +1681,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -1801,7 +1809,7 @@
     },
     {
       "name": "forecast_daily_elevation",
-      "description": "Elevation is sent; the forecast is always forecast kind.",
+      "description": "Elevation is sent; a forecast is always of forecast kind.",
       "call": {
         "operation": "forecast_daily",
         "location": {
@@ -1817,6 +1825,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -1961,6 +1970,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -2086,6 +2096,208 @@
       }
     },
     {
+      "name": "historical_hourly_unknown_zone",
+      "description": "A zone name the time zone database lacks falls back to the fixed UTC offset the response reports (no DST change).",
+      "call": {
+        "operation": "historical_hourly",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "air_temperature"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Unknown/Zone",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "hourly_units": {
+            "time": "unixtime",
+            "temperature_2m": "°C",
+            "relative_humidity_2m": "%",
+            "dew_point_2m": "°C",
+            "vapour_pressure_deficit": "kPa",
+            "precipitation": "mm",
+            "rain": "mm",
+            "surface_pressure": "hPa",
+            "pressure_msl": "hPa",
+            "cloud_cover": "%",
+            "wind_speed_10m": "m/s",
+            "wind_gusts_10m": "m/s",
+            "wind_direction_10m": "°",
+            "shortwave_radiation": "W/m²",
+            "sunshine_duration": "s",
+            "et0_fao_evapotranspiration": "mm",
+            "global_tilted_irradiance": "W/m²"
+          },
+          "hourly": {
+            "time": [
+              1711839600,
+              1711843200,
+              1711846800,
+              1711850400
+            ],
+            "temperature_2m": [
+              6.1,
+              6.3,
+              5.5,
+              5.7
+            ],
+            "relative_humidity_2m": [
+              94,
+              92,
+              91,
+              91
+            ],
+            "dew_point_2m": [
+              5.2,
+              5.1,
+              4.2,
+              4.4
+            ],
+            "vapour_pressure_deficit": [
+              0.06,
+              0.08,
+              0.08,
+              0.08
+            ],
+            "precipitation": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "rain": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "surface_pressure": [
+              918.7,
+              919.3,
+              919.6,
+              919.2
+            ],
+            "pressure_msl": [
+              996.2,
+              996.8,
+              997.3,
+              996.8
+            ],
+            "cloud_cover": [
+              100,
+              100,
+              100,
+              100
+            ],
+            "wind_speed_10m": [
+              5.17,
+              5.03,
+              4.68,
+              3.48
+            ],
+            "wind_gusts_10m": [
+              8.5,
+              9.6,
+              8.5,
+              8.2
+            ],
+            "wind_direction_10m": [
+              227,
+              221,
+              228,
+              219
+            ],
+            "shortwave_radiation": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sunshine_duration": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "et0_fao_evapotranspiration": [
+              0.01,
+              0.01,
+              0.01,
+              0.01
+            ],
+            "global_tilted_irradiance": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "hourly": "temperature_2m",
+          "timeformat": "unixtime"
+        }
+      },
+      "expected": {
+        "series": {
+          "provider": "open_meteo",
+          "dataset": "archive",
+          "location": {
+            "latitude": 40.386642,
+            "longitude": -3.6760864
+          },
+          "elevation": 667.0,
+          "timezone": "Unknown/Zone",
+          "time": [
+            "2024-03-31T00:00:00+01:00",
+            "2024-03-31T01:00:00+01:00",
+            "2024-03-31T02:00:00+01:00",
+            "2024-03-31T03:00:00+01:00"
+          ],
+          "values": {
+            "air_temperature": [
+              6.1,
+              6.3,
+              5.5,
+              5.7
+            ]
+          },
+          "units": {
+            "air_temperature": "°C"
+          },
+          "source": null,
+          "source_kind": null,
+          "attribution": "Weather data by Open-Meteo.com (https://open-meteo.com/), CC BY 4.0",
+          "surface": null,
+          "resolution": "hourly"
+        }
+      }
+    },
+    {
       "name": "forecast_hourly_surface_ignored",
       "description": "A surface without a tilted variable is neither sent nor recorded.",
       "call": {
@@ -2106,6 +2318,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.39599,
           "longitude": -3.6793447,
@@ -2315,6 +2528,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -2460,6 +2674,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -2605,6 +2820,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -2751,6 +2967,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.39599,
           "longitude": -3.6793447,
@@ -2966,6 +3183,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.39599,
           "longitude": -3.6793447,
@@ -3181,6 +3399,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.39599,
           "longitude": -3.6793447,
@@ -3394,6 +3613,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -3565,6 +3785,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -3682,6 +3903,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -3727,8 +3949,365 @@
       }
     },
     {
+      "name": "missing_hourly_block",
+      "description": "The requested resolution block is absent.",
+      "call": {
+        "operation": "historical_hourly",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "air_temperature"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "hourly_units": {
+            "time": "unixtime",
+            "temperature_2m": "°C",
+            "relative_humidity_2m": "%",
+            "dew_point_2m": "°C",
+            "vapour_pressure_deficit": "kPa",
+            "precipitation": "mm",
+            "rain": "mm",
+            "surface_pressure": "hPa",
+            "pressure_msl": "hPa",
+            "cloud_cover": "%",
+            "wind_speed_10m": "m/s",
+            "wind_gusts_10m": "m/s",
+            "wind_direction_10m": "°",
+            "shortwave_radiation": "W/m²",
+            "sunshine_duration": "s",
+            "et0_fao_evapotranspiration": "mm",
+            "global_tilted_irradiance": "W/m²"
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "hourly": "temperature_2m",
+          "timeformat": "unixtime"
+        }
+      },
+      "expected": {
+        "error": "provider_contract",
+        "message_contains": "hourly"
+      }
+    },
+    {
+      "name": "time_not_increasing",
+      "description": "A repeated timestamp cannot form a valid series.",
+      "call": {
+        "operation": "historical_hourly",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "air_temperature"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "hourly_units": {
+            "time": "unixtime",
+            "temperature_2m": "°C",
+            "relative_humidity_2m": "%",
+            "dew_point_2m": "°C",
+            "vapour_pressure_deficit": "kPa",
+            "precipitation": "mm",
+            "rain": "mm",
+            "surface_pressure": "hPa",
+            "pressure_msl": "hPa",
+            "cloud_cover": "%",
+            "wind_speed_10m": "m/s",
+            "wind_gusts_10m": "m/s",
+            "wind_direction_10m": "°",
+            "shortwave_radiation": "W/m²",
+            "sunshine_duration": "s",
+            "et0_fao_evapotranspiration": "mm",
+            "global_tilted_irradiance": "W/m²"
+          },
+          "hourly": {
+            "time": [
+              1711839600,
+              1711839600,
+              1711846800,
+              1711850400
+            ],
+            "temperature_2m": [
+              6.1,
+              6.3,
+              5.5,
+              5.7
+            ],
+            "relative_humidity_2m": [
+              94,
+              92,
+              91,
+              91
+            ],
+            "dew_point_2m": [
+              5.2,
+              5.1,
+              4.2,
+              4.4
+            ],
+            "vapour_pressure_deficit": [
+              0.06,
+              0.08,
+              0.08,
+              0.08
+            ],
+            "precipitation": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "rain": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "surface_pressure": [
+              918.7,
+              919.3,
+              919.6,
+              919.2
+            ],
+            "pressure_msl": [
+              996.2,
+              996.8,
+              997.3,
+              996.8
+            ],
+            "cloud_cover": [
+              100,
+              100,
+              100,
+              100
+            ],
+            "wind_speed_10m": [
+              5.17,
+              5.03,
+              4.68,
+              3.48
+            ],
+            "wind_gusts_10m": [
+              8.5,
+              9.6,
+              8.5,
+              8.2
+            ],
+            "wind_direction_10m": [
+              227,
+              221,
+              228,
+              219
+            ],
+            "shortwave_radiation": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sunshine_duration": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "et0_fao_evapotranspiration": [
+              0.01,
+              0.01,
+              0.01,
+              0.01
+            ],
+            "global_tilted_irradiance": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "hourly": "temperature_2m",
+          "timeformat": "unixtime"
+        }
+      },
+      "expected": {
+        "error": "provider_contract",
+        "message_contains": "increasing"
+      }
+    },
+    {
+      "name": "misaligned_column",
+      "description": "A column shorter than the time axis cannot form a valid series.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              1.0
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract",
+        "message_contains": "aligned"
+      }
+    },
+    {
       "name": "empty_column",
-      "description": "A requested variable with no value at all names the source.",
+      "description": "A requested variable with no value at all; the message names the source.",
       "call": {
         "operation": "historical_daily",
         "location": {
@@ -3746,6 +4325,7 @@
       },
       "response": {
         "status": 200,
+        "headers": {},
         "body": {
           "latitude": 40.386642,
           "longitude": -3.6760864,
@@ -3864,6 +4444,7 @@
       },
       "response": {
         "status": 400,
+        "headers": {},
         "body": {
           "error": true,
           "reason": "Parameter 'end_date' is out"
@@ -3891,8 +4472,176 @@
       }
     },
     {
+      "name": "api_error_without_reason",
+      "description": "An HTTP 400 whose payload has an unknown shape still raises an HTTP error.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {},
+        "body": {
+          "detail": "unexpected payload"
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "rain_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_http",
+        "status_code": 400
+      }
+    },
+    {
+      "name": "rate_limited",
+      "description": "HTTP 429; the requested wait (Retry-After) is kept.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {}
+      },
+      "response": {
+        "status": 429,
+        "headers": {
+          "Retry-After": "60"
+        },
+        "body": {
+          "error": true,
+          "reason": "Minutely API request limit"
+        }
+      },
+      "request": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "forecast_days": "7",
+          "past_days": "0",
+          "daily": "rain_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "rate_limit",
+        "status_code": 429,
+        "retry_after": 60.0,
+        "message_contains": "limit"
+      }
+    },
+    {
+      "name": "server_error",
+      "description": "HTTP 5xx is the provider's failure.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {}
+      },
+      "response": {
+        "status": 503,
+        "headers": {},
+        "body": {
+          "error": true,
+          "reason": "Service unavailable"
+        }
+      },
+      "request": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "forecast_days": "7",
+          "past_days": "0",
+          "daily": "rain_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_server",
+        "status_code": 503
+      }
+    },
+    {
+      "name": "connection_failure",
+      "description": "The provider cannot be reached.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {}
+      },
+      "response": {
+        "failure": "connection"
+      },
+      "request": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "forecast_days": "7",
+          "past_days": "0",
+          "daily": "rain_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_connection"
+      }
+    },
+    {
       "name": "unsupported_forecast_hourly_air_temperature_max",
-      "description": "Variable not offered at this resolution or dataset.",
+      "description": "Variable not offered for this dataset and resolution.",
       "call": {
         "operation": "forecast_hourly",
         "location": {
@@ -3912,7 +4661,7 @@
     },
     {
       "name": "unsupported_historical_hourly_precipitation_probability",
-      "description": "Variable not offered at this resolution or dataset.",
+      "description": "Variable not offered for this dataset and resolution.",
       "call": {
         "operation": "historical_hourly",
         "location": {
@@ -3935,7 +4684,7 @@
     },
     {
       "name": "unsupported_forecast_daily_shortwave_radiation_tilted",
-      "description": "Variable not offered at this resolution or dataset.",
+      "description": "Variable not offered for this dataset and resolution.",
       "call": {
         "operation": "forecast_daily",
         "location": {
@@ -4146,6 +4895,50 @@
       }
     },
     {
+      "name": "invalid_model_empty",
+      "description": "Invalid argument rejected before any request.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {
+          "model": ""
+        }
+      },
+      "response": null,
+      "request": null,
+      "expected": {
+        "error": "invalid_argument"
+      }
+    },
+    {
+      "name": "invalid_model_space",
+      "description": "Invalid argument rejected before any request.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {
+          "model": "a b"
+        }
+      },
+      "response": null,
+      "request": null,
+      "expected": {
+        "error": "invalid_argument"
+      }
+    },
+    {
       "name": "invalid_elevation_-501",
       "description": "Invalid argument rejected before any request.",
       "call": {
@@ -4241,7 +5034,7 @@
     },
     {
       "name": "invalid_end_before_start",
-      "description": "Invalid argument rejected before any request.",
+      "description": "Invalid date range rejected before any request.",
       "call": {
         "operation": "historical_daily",
         "location": {
@@ -4259,12 +5052,13 @@
       "response": null,
       "request": null,
       "expected": {
-        "error": "invalid_argument"
+        "error": "invalid_argument",
+        "message_contains": "start"
       }
     },
     {
       "name": "invalid_start_before_1940",
-      "description": "Invalid argument rejected before any request.",
+      "description": "Invalid date range rejected before any request.",
       "call": {
         "operation": "historical_daily",
         "location": {
@@ -4282,7 +5076,8 @@
       "response": null,
       "request": null,
       "expected": {
-        "error": "invalid_argument"
+        "error": "invalid_argument",
+        "message_contains": "start"
       }
     }
   ]

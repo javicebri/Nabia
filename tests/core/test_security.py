@@ -49,3 +49,14 @@ def test_httpx_log_records_are_redacted(
         )
     assert "SECRET" not in caplog.text
     assert "token=***" in caplog.text
+
+
+def test_log_records_without_secrets_are_untouched(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    install_log_redaction()
+    logger = logging.getLogger("httpx")
+    with caplog.at_level(logging.INFO, logger="httpx"):
+        logger.info("HTTP Request: %s %s", "GET", "https://api.test/?lat=1")
+    (record,) = caplog.records
+    assert record.args == ("GET", "https://api.test/?lat=1")

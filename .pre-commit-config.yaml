@@ -39,3 +39,11 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+
+      # The generated contract must match the code it is exported from.
+      - id: contract
+        name: contract/ up to date
+        entry: uv run python -m tools.contract --check
+        language: system
+        files: ^(src/nabia/|tools/|tests/providers/[^/]+/(conformance\.py|fixtures/)|contract/)
+        pass_filenames: false

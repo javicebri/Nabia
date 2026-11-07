@@ -123,7 +123,7 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-exclude_also = ["if TYPE_CHECKING:"]
+exclude_also = ["if TYPE_CHECKING:", 'if __name__ == "__main__":']
 
 [tool.uv]
 # Verify TLS with the OS trust store (same policy as Nabia itself).

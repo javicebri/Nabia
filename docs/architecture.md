@@ -88,8 +88,11 @@ conversions, variables), each provider's endpoints and mapping
 tables, the JSON Schema of the output models and golden conformance
 cases. Ports generate their code from it at development time and
 replay the cases in their tests: same call and provider response, same
-request sent and same series or error. An offline test fails while the
-committed files are stale. Unit conversions are declared as data (`(value - offset) /
+request sent and same series or error. Python replays the committed
+cases too, so both implementations pass the same suite. Each case
+declares its outcome and recording fails if it does not happen;
+nothing in `tools/` is provider-specific. A pre-commit hook and an
+offline test fail while the committed files are stale. Unit conversions are declared as data (`(value - offset) /
 divisor`) so ports reproduce Python's results bit for bit.
 
 ## Errors
@@ -148,3 +151,5 @@ requests or from what the provider reports.
 | 2026-11-07 | Spec snapshots stay local (git-ignored): development happens on one machine, nothing derived from upstream specs is published. |
 | 2026-11-07 | Python stays the reference; an idiomatic Dart port will live in this repository (monorepo) and build from the generated `contract/`. Credentials stay agnostic: the consuming app supplies them. |
 | 2026-11-07 | Unit conversions declared as affine data instead of code, so ports reproduce results exactly. |
+| 2026-11-07 | Shared behaviour is specified once as conformance cases (Smithy protocol-test style) replayed by every implementation; Python-only tests cover the Python API surface. Contract-first IDL generation (Smithy, OpenAPI) reconsidered if more languages or many providers appear. |
+| 2026-11-07 | `RateLimitError.retry_after` reports the provider's requested wait uncapped; only Nabia's own retry sleeps are capped at 30 s. |

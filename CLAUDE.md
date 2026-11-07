@@ -17,8 +17,8 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
 - All hooks: `uv run python -m pre_commit run --all-files`
 - Equivalence table: `uv run python -m nabia.catalog`
 - Regenerate the language-neutral contract (commit it) after changing
-  the catalog, output models or a mapping:
-  `uv run python -m tools.contract`
+  the catalog, output models, a provider or its conformance cases:
+  `uv run python -m tools.contract` (`--check` only verifies)
 - Create/refresh a spec snapshot (local only, git-ignored; never
   commit it): `uv run python -m tests.providers.<name>.spec`
 
@@ -30,11 +30,14 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
   `VariableTable` (equivalences and drift checks)
 - `src/nabia/providers/<name>/`: one self-contained provider (README,
   config, mapping, schemas, parser, client)
-- `tests/` mirrors `src/`; `tests/live/` hits the real APIs
+- `tests/` mirrors `src/`; `tests/live/` hits the real APIs;
+  `tests/providers/<name>/conformance.py` defines the behaviour shared
+  with ports (replayed by `tests/test_conformance.py`)
 - `contract/`: generated JSON (catalog, provider tables, model schema,
   conformance cases) that ports to other languages build from and
   test against; see its README. Large: grep it, never read it whole
-- `tools/`: repository maintenance scripts, not shipped
+- `tools/`: repository maintenance scripts (contract export,
+  conformance recording), not shipped; never provider-specific
 
 ## Token-efficient workflow
 

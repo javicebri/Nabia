@@ -11,7 +11,7 @@ from nabia.catalog import (
     Variable,
     VariableTable,
 )
-from nabia.catalog.__main__ import render
+from nabia.catalog.__main__ import main, render
 from nabia.core.errors import (
     NoDataError,
     ProviderContractError,
@@ -96,6 +96,18 @@ def test_render_cross_provider_table() -> None:
     assert "## hourly" in output
     assert "| air_temperature | °C | `temperature_2m` (°C)" in output
     assert "Last verified:" in output
+
+
+def test_main_prints_the_table(capsys: pytest.CaptureFixture[str]) -> None:
+    main()
+    assert capsys.readouterr().out == render(all_tables())
+
+
+def test_supported_lists_mapped_variables() -> None:
+    assert SUNSHINE.supported(Resolution.HOURLY) == {
+        Variable.SUNSHINE_DURATION
+    }
+    assert SUNSHINE.supported(Resolution.DAILY) == frozenset()
 
 
 def test_extract_rejects_an_entirely_empty_column() -> None:

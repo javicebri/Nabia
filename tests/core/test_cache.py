@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from nabia.core.cache import SQLiteResponseCache, make_cache_key
 
 
@@ -36,6 +38,20 @@ def test_purge_and_clear(tmp_path: Path) -> None:
     assert cache.get("new") == b"2"
     cache.clear()
     assert cache.get("new") is None
+
+
+def test_file_is_private_on_posix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    modes: list[int] = []
+    monkeypatch.setattr("nabia.core.cache.os.name", "posix")
+    monkeypatch.setattr(Path, "chmod", lambda _self, mode: modes.append(mode))
+    path = tmp_path / "c.sqlite3"
+    cache = SQLiteResponseCache(path)
+    assert cache.path == path
+    cache.set("k", b"body", ttl_seconds=10)
+    cache.set("k2", b"body", ttl_seconds=10)
+    assert modes == [0o600]  # once, when the file is created
 
 
 def test_cache_key_ignores_secrets() -> None:

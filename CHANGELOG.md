@@ -18,7 +18,22 @@ they are always listed under **Changed** or **Removed**.
   tables and endpoints, the output model schema and golden
   conformance cases (call, response, expected request and result),
   for ports to other languages. Regenerated with
-  `python -m tools.contract` (not shipped in the wheel).
+  `python -m tools.contract`, checked with `--check` and a pre-commit
+  hook (not shipped in the wheel).
+
+### Changed
+
+- The serialization JSON Schema of output models
+  (`model_json_schema(mode="serialization")`) lists every field as
+  required, since serialization always emits them all.
+- A `Retry-After: 0` header now retries immediately instead of
+  falling back to exponential backoff.
+
+### Fixed
+
+- `RateLimitError.retry_after` reports the wait the provider asked for.
+  It was capped at 30 s, the limit Nabia applies to its own waits
+  between retries, so callers could retry too early.
 
 ### Removed
 

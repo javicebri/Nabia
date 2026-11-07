@@ -2,24 +2,27 @@
   "contract_version": 1,
   "provider": "open_meteo",
   "endpoints": {
-    "forecast": "https://api.open-meteo.com/v1/forecast",
-    "archive": "https://archive-api.open-meteo.com/v1/archive"
+    "forecast_url": "https://api.open-meteo.com/v1/forecast",
+    "archive_url": "https://archive-api.open-meteo.com/v1/archive"
   },
-  "attribution": "Weather data by Open-Meteo.com (https://open-meteo.com/), CC BY 4.0",
-  "default_model": "best_match",
-  "unit_params": {
-    "temperature_unit": "celsius",
-    "wind_speed_unit": "ms",
-    "precipitation_unit": "mm"
-  },
-  "archive_sources": {
-    "era5": "reanalysis",
-    "era5_seamless": "reanalysis",
-    "era5_land": "reanalysis",
-    "era5_ensemble": "reanalysis",
-    "cerra": "reanalysis",
-    "ecmwf_ifs": "analysis",
-    "ecmwf_ifs_analysis_long_window": "analysis"
+  "constants": {
+    "verified_on": "2026-11-07",
+    "attribution": "Weather data by Open-Meteo.com (https://open-meteo.com/), CC BY 4.0",
+    "default_model": "best_match",
+    "archive_sources": {
+      "era5": "reanalysis",
+      "era5_seamless": "reanalysis",
+      "era5_land": "reanalysis",
+      "era5_ensemble": "reanalysis",
+      "cerra": "reanalysis",
+      "ecmwf_ifs": "analysis",
+      "ecmwf_ifs_analysis_long_window": "analysis"
+    },
+    "unit_params": {
+      "temperature_unit": "celsius",
+      "wind_speed_unit": "ms",
+      "precipitation_unit": "mm"
+    }
   },
   "datasets": {
     "forecast": {

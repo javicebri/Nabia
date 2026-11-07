@@ -72,7 +72,12 @@ class AuthenticationError(ProviderHTTPError):
 
 
 class RateLimitError(ProviderHTTPError):
-    """The provider throttled the client (HTTP 429)."""
+    """The provider throttled the client (HTTP 429).
+
+    Attributes:
+        retry_after: Seconds the provider asked to wait (its
+            ``Retry-After`` header), when it gave a number.
+    """
 
     def __init__(
         self,
