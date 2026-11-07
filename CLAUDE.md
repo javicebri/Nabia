@@ -16,6 +16,9 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
 - Lint/format: `uv run ruff check --fix . ; uv run ruff format .`
 - All hooks: `uv run python -m pre_commit run --all-files`
 - Equivalence table: `uv run python -m nabia.catalog`
+- Regenerate the language-neutral contract (commit it) after changing
+  the catalog, output models or a mapping:
+  `uv run python -m tools.contract`
 - Create/refresh a spec snapshot (local only, git-ignored; never
   commit it): `uv run python -m tests.providers.<name>.spec`
 
@@ -28,6 +31,10 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
 - `src/nabia/providers/<name>/`: one self-contained provider (README,
   config, mapping, schemas, parser, client)
 - `tests/` mirrors `src/`; `tests/live/` hits the real APIs
+- `contract/`: generated JSON (catalog, provider tables, model schema,
+  conformance cases) that ports to other languages build from and
+  test against; see its README. Large: grep it, never read it whole
+- `tools/`: repository maintenance scripts, not shipped
 
 ## Token-efficient workflow
 

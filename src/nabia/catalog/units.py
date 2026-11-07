@@ -5,7 +5,8 @@ report units as strings are compared against these values, so a silent
 unit change upstream is detected instead of corrupting data.
 """
 
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
+from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
 
@@ -32,21 +33,40 @@ class Unit(StrEnum):
     HOUR = "h"
 
 
-#: A single-value unit conversion.
-Converter = Callable[[float], float]
+@dataclass(frozen=True, slots=True)
+class Conversion:
+    """Affine unit conversion: ``(value - offset) / divisor``.
 
-_CONVERSIONS: MappingProxyType[tuple[Unit, Unit], Converter] = (
+    Conversions are declared as data rather than code so that ports to
+    other languages (generated from ``contract/``) evaluate the same
+    expression and reproduce Nabia's results bit for bit.
+
+    Attributes:
+        offset: Subtracted from the value first.
+        divisor: The difference is then divided by it.
+    """
+
+    offset: float = 0.0
+    divisor: float = 1.0
+
+    def apply(self, value: float) -> float:
+        """Convert one value."""
+        return (value - self.offset) / self.divisor
+
+
+#: Every supported conversion, keyed by ``(source, target)``.
+CONVERSIONS: MappingProxyType[tuple[Unit, Unit], Conversion] = (
     MappingProxyType(
         {
-            (Unit.KELVIN, Unit.CELSIUS): lambda v: v - 273.15,
-            (Unit.KILOMETRE_PER_HOUR, Unit.METRE_PER_SECOND): (
-                lambda v: v / 3.6
+            (Unit.KELVIN, Unit.CELSIUS): Conversion(offset=273.15),
+            (Unit.KILOMETRE_PER_HOUR, Unit.METRE_PER_SECOND): Conversion(
+                divisor=3.6
             ),
-            (Unit.PASCAL, Unit.HECTOPASCAL): lambda v: v / 100.0,
+            (Unit.PASCAL, Unit.HECTOPASCAL): Conversion(divisor=100.0),
             (Unit.JOULE_PER_SQUARE_METRE, Unit.MEGAJOULE_PER_SQUARE_METRE): (
-                lambda v: v / 1_000_000.0
+                Conversion(divisor=1_000_000.0)
             ),
-            (Unit.SECOND, Unit.HOUR): lambda v: v / 3600.0,
+            (Unit.SECOND, Unit.HOUR): Conversion(divisor=3600.0),
         }
     )
 )
@@ -54,7 +74,7 @@ _CONVERSIONS: MappingProxyType[tuple[Unit, Unit], Converter] = (
 
 def can_convert(source: Unit, target: Unit) -> bool:
     """Return whether ``source`` converts to ``target``."""
-    return source == target or (source, target) in _CONVERSIONS
+    return source == target or (source, target) in CONVERSIONS
 
 
 def convert(
@@ -68,9 +88,9 @@ def convert(
     if source == target:
         return tuple(values)
     try:
-        converter = _CONVERSIONS[(source, target)]
+        conversion = CONVERSIONS[(source, target)]
     except KeyError:
         raise UnitConversionError(
             f"No conversion defined from {source.value!r} to {target.value!r}"
         ) from None
-    return tuple(None if v is None else converter(v) for v in values)
+    return tuple(None if v is None else conversion.apply(v) for v in values)

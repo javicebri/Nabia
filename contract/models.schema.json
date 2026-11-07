@@ -1,0 +1,386 @@
+{
+  "$defs": {
+    "DailySeries": {
+      "additionalProperties": false,
+      "description": "Daily series; each date is a calendar day in ``timezone``.",
+      "properties": {
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "dataset": {
+          "title": "Dataset",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/GeoPoint"
+        },
+        "elevation": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Elevation"
+        },
+        "timezone": {
+          "title": "Timezone",
+          "type": "string"
+        },
+        "time": {
+          "items": {
+            "format": "date",
+            "type": "string"
+          },
+          "title": "Time",
+          "type": "array"
+        },
+        "values": {
+          "additionalProperties": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Variable"
+          },
+          "title": "Values",
+          "type": "object"
+        },
+        "units": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Unit"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Variable"
+          },
+          "title": "Units",
+          "type": "object"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        },
+        "source_kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceKind"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "attribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attribution"
+        },
+        "surface": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Surface"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "resolution": {
+          "const": "daily",
+          "default": "daily",
+          "title": "Resolution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "dataset",
+        "location",
+        "timezone",
+        "time",
+        "values"
+      ],
+      "title": "DailySeries",
+      "type": "object"
+    },
+    "GeoPoint": {
+      "additionalProperties": false,
+      "description": "WGS84 coordinates in decimal degrees.",
+      "properties": {
+        "latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Longitude",
+          "type": "number"
+        }
+      },
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "title": "GeoPoint",
+      "type": "object"
+    },
+    "HourlySeries": {
+      "additionalProperties": false,
+      "description": "Hourly series; timestamps are timezone-aware datetimes.",
+      "properties": {
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "dataset": {
+          "title": "Dataset",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/GeoPoint"
+        },
+        "elevation": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Elevation"
+        },
+        "timezone": {
+          "title": "Timezone",
+          "type": "string"
+        },
+        "time": {
+          "items": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "title": "Time",
+          "type": "array"
+        },
+        "values": {
+          "additionalProperties": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Variable"
+          },
+          "title": "Values",
+          "type": "object"
+        },
+        "units": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Unit"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Variable"
+          },
+          "title": "Units",
+          "type": "object"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        },
+        "source_kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceKind"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "attribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attribution"
+        },
+        "surface": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Surface"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "resolution": {
+          "const": "hourly",
+          "default": "hourly",
+          "title": "Resolution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "dataset",
+        "location",
+        "timezone",
+        "time",
+        "values"
+      ],
+      "title": "HourlySeries",
+      "type": "object"
+    },
+    "SourceKind": {
+      "description": "Nature of the data in a series.\n\nOnly ``OBSERVATION`` is a direct measurement; the other kinds are\nmodel or remote-sensing estimates.",
+      "enum": [
+        "forecast",
+        "analysis",
+        "reanalysis",
+        "observation",
+        "satellite"
+      ],
+      "title": "SourceKind",
+      "type": "string"
+    },
+    "Surface": {
+      "additionalProperties": false,
+      "description": "Inclined surface, e.g. a slope, for plane-of-array variables.\n\nAttributes:\n    tilt: Inclination from the horizontal in degrees (0 = flat,\n        90 = vertical).\n    aspect: Compass direction the surface faces, in degrees\n        clockwise from north (0 = north, 90 = east, 180 = south,\n        270 = west). Providers' own conventions are translated.",
+      "properties": {
+        "tilt": {
+          "maximum": 90.0,
+          "minimum": 0.0,
+          "title": "Tilt",
+          "type": "number"
+        },
+        "aspect": {
+          "exclusiveMaximum": 360.0,
+          "minimum": 0.0,
+          "title": "Aspect",
+          "type": "number"
+        }
+      },
+      "required": [
+        "tilt",
+        "aspect"
+      ],
+      "title": "Surface",
+      "type": "object"
+    },
+    "Unit": {
+      "description": "Physical units (value = symbol used in output).",
+      "enum": [
+        "°C",
+        "K",
+        "%",
+        "mm",
+        "m/s",
+        "km/h",
+        "°",
+        "Pa",
+        "hPa",
+        "kPa",
+        "W/m²",
+        "J/m²",
+        "MJ/m²",
+        "s",
+        "h"
+      ],
+      "title": "Unit",
+      "type": "string"
+    },
+    "Variable": {
+      "description": "Canonical variable names (value = name used in output).",
+      "enum": [
+        "air_temperature",
+        "air_temperature_mean",
+        "air_temperature_max",
+        "air_temperature_min",
+        "relative_humidity",
+        "relative_humidity_mean",
+        "dew_point",
+        "vapour_pressure_deficit",
+        "precipitation",
+        "precipitation_probability",
+        "precipitation_probability_max",
+        "rain",
+        "surface_pressure",
+        "sea_level_pressure",
+        "cloud_cover",
+        "wind_speed",
+        "wind_speed_max",
+        "wind_gusts",
+        "wind_gusts_max",
+        "wind_direction",
+        "wind_direction_dominant",
+        "shortwave_radiation",
+        "shortwave_radiation_sum",
+        "shortwave_radiation_tilted",
+        "sunshine_duration",
+        "reference_evapotranspiration"
+      ],
+      "title": "Variable",
+      "type": "string"
+    }
+  },
+  "title": "Nabia output models"
+}

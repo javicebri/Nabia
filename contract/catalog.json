@@ -1,0 +1,286 @@
+{
+  "contract_version": 1,
+  "units": {
+    "celsius": "°C",
+    "kelvin": "K",
+    "percent": "%",
+    "millimetre": "mm",
+    "metre_per_second": "m/s",
+    "kilometre_per_hour": "km/h",
+    "degree": "°",
+    "pascal": "Pa",
+    "hectopascal": "hPa",
+    "kilopascal": "kPa",
+    "watt_per_square_metre": "W/m²",
+    "joule_per_square_metre": "J/m²",
+    "megajoule_per_square_metre": "MJ/m²",
+    "second": "s",
+    "hour": "h"
+  },
+  "conversions": [
+    {
+      "from": "kelvin",
+      "to": "celsius",
+      "offset": 273.15,
+      "divisor": 1.0
+    },
+    {
+      "from": "kilometre_per_hour",
+      "to": "metre_per_second",
+      "offset": 0.0,
+      "divisor": 3.6
+    },
+    {
+      "from": "pascal",
+      "to": "hectopascal",
+      "offset": 0.0,
+      "divisor": 100.0
+    },
+    {
+      "from": "joule_per_square_metre",
+      "to": "megajoule_per_square_metre",
+      "offset": 0.0,
+      "divisor": 1000000.0
+    },
+    {
+      "from": "second",
+      "to": "hour",
+      "offset": 0.0,
+      "divisor": 3600.0
+    }
+  ],
+  "resolutions": [
+    "hourly",
+    "daily"
+  ],
+  "aggregations": [
+    "instant",
+    "mean",
+    "sum",
+    "maximum",
+    "minimum",
+    "dominant",
+    "probability"
+  ],
+  "source_kinds": [
+    "forecast",
+    "analysis",
+    "reanalysis",
+    "observation",
+    "satellite"
+  ],
+  "variables": {
+    "air_temperature": {
+      "unit": "celsius",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Air temperature at 2 m."
+    },
+    "air_temperature_mean": {
+      "unit": "celsius",
+      "aggregation": "mean",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Mean air temperature at 2 m over the interval."
+    },
+    "air_temperature_max": {
+      "unit": "celsius",
+      "aggregation": "maximum",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Maximum air temperature at 2 m over the interval."
+    },
+    "air_temperature_min": {
+      "unit": "celsius",
+      "aggregation": "minimum",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Minimum air temperature at 2 m over the interval."
+    },
+    "relative_humidity": {
+      "unit": "percent",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Relative humidity at 2 m."
+    },
+    "relative_humidity_mean": {
+      "unit": "percent",
+      "aggregation": "mean",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Mean relative humidity at 2 m over the interval."
+    },
+    "dew_point": {
+      "unit": "celsius",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Dew point temperature at 2 m."
+    },
+    "vapour_pressure_deficit": {
+      "unit": "kilopascal",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Vapour pressure deficit at 2 m."
+    },
+    "precipitation": {
+      "unit": "millimetre",
+      "aggregation": "sum",
+      "resolutions": [
+        "hourly",
+        "daily"
+      ],
+      "description": "Total precipitation (rain, showers, snow water equivalent) accumulated over the interval."
+    },
+    "precipitation_probability": {
+      "unit": "percent",
+      "aggregation": "probability",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Forecast probability that precipitation occurs within the interval."
+    },
+    "precipitation_probability_max": {
+      "unit": "percent",
+      "aggregation": "maximum",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Highest hourly precipitation probability within the interval. It is not the probability of precipitation over the whole interval."
+    },
+    "rain": {
+      "unit": "millimetre",
+      "aggregation": "sum",
+      "resolutions": [
+        "hourly",
+        "daily"
+      ],
+      "description": "Liquid precipitation accumulated over the interval."
+    },
+    "surface_pressure": {
+      "unit": "hectopascal",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Atmospheric pressure at the surface."
+    },
+    "sea_level_pressure": {
+      "unit": "hectopascal",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Atmospheric pressure reduced to mean sea level."
+    },
+    "cloud_cover": {
+      "unit": "percent",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Total cloud cover fraction."
+    },
+    "wind_speed": {
+      "unit": "metre_per_second",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Wind speed at 10 m."
+    },
+    "wind_speed_max": {
+      "unit": "metre_per_second",
+      "aggregation": "maximum",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Maximum wind speed at 10 m over the interval."
+    },
+    "wind_gusts": {
+      "unit": "metre_per_second",
+      "aggregation": "maximum",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Maximum wind gust at 10 m over the interval."
+    },
+    "wind_gusts_max": {
+      "unit": "metre_per_second",
+      "aggregation": "maximum",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Maximum wind gust at 10 m over the interval."
+    },
+    "wind_direction": {
+      "unit": "degree",
+      "aggregation": "instant",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Direction the wind blows from at 10 m (0 = north)."
+    },
+    "wind_direction_dominant": {
+      "unit": "degree",
+      "aggregation": "dominant",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Dominant wind direction at 10 m over the interval."
+    },
+    "shortwave_radiation": {
+      "unit": "watt_per_square_metre",
+      "aggregation": "mean",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Global horizontal irradiance, mean over the interval."
+    },
+    "shortwave_radiation_tilted": {
+      "unit": "watt_per_square_metre",
+      "aggregation": "mean",
+      "resolutions": [
+        "hourly"
+      ],
+      "description": "Global irradiance on an inclined surface (direct, diffuse and reflected), mean over the interval. The surface is recorded in the series."
+    },
+    "shortwave_radiation_sum": {
+      "unit": "megajoule_per_square_metre",
+      "aggregation": "sum",
+      "resolutions": [
+        "daily"
+      ],
+      "description": "Global horizontal irradiation accumulated over the interval."
+    },
+    "sunshine_duration": {
+      "unit": "hour",
+      "aggregation": "sum",
+      "resolutions": [
+        "hourly",
+        "daily"
+      ],
+      "description": "Sunshine duration (direct irradiance above 120 W/m²) accumulated over the interval."
+    },
+    "reference_evapotranspiration": {
+      "unit": "millimetre",
+      "aggregation": "sum",
+      "resolutions": [
+        "hourly",
+        "daily"
+      ],
+      "description": "FAO-56 Penman-Monteith reference evapotranspiration (ET0) of a well-watered grass surface, accumulated over the interval."
+    }
+  }
+}

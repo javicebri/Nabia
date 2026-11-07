@@ -1,0 +1,332 @@
+{
+  "contract_version": 1,
+  "provider": "open_meteo",
+  "endpoints": {
+    "forecast": "https://api.open-meteo.com/v1/forecast",
+    "archive": "https://archive-api.open-meteo.com/v1/archive"
+  },
+  "attribution": "Weather data by Open-Meteo.com (https://open-meteo.com/), CC BY 4.0",
+  "default_model": "best_match",
+  "unit_params": {
+    "temperature_unit": "celsius",
+    "wind_speed_unit": "ms",
+    "precipitation_unit": "mm"
+  },
+  "archive_sources": {
+    "era5": "reanalysis",
+    "era5_seamless": "reanalysis",
+    "era5_land": "reanalysis",
+    "era5_ensemble": "reanalysis",
+    "cerra": "reanalysis",
+    "ecmwf_ifs": "analysis",
+    "ecmwf_ifs_analysis_long_window": "analysis"
+  },
+  "datasets": {
+    "forecast": {
+      "reference_url": "https://open-meteo.com/en/docs",
+      "verified_on": "2026-11-07",
+      "hourly": {
+        "air_temperature": {
+          "name": "temperature_2m",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "relative_humidity": {
+          "name": "relative_humidity_2m",
+          "unit": "percent",
+          "notes": ""
+        },
+        "dew_point": {
+          "name": "dew_point_2m",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "vapour_pressure_deficit": {
+          "name": "vapour_pressure_deficit",
+          "unit": "kilopascal",
+          "notes": ""
+        },
+        "precipitation": {
+          "name": "precipitation",
+          "unit": "millimetre",
+          "notes": "Sum of the preceding hour."
+        },
+        "rain": {
+          "name": "rain",
+          "unit": "millimetre",
+          "notes": "Sum of the preceding hour."
+        },
+        "surface_pressure": {
+          "name": "surface_pressure",
+          "unit": "hectopascal",
+          "notes": ""
+        },
+        "sea_level_pressure": {
+          "name": "pressure_msl",
+          "unit": "hectopascal",
+          "notes": ""
+        },
+        "cloud_cover": {
+          "name": "cloud_cover",
+          "unit": "percent",
+          "notes": ""
+        },
+        "wind_speed": {
+          "name": "wind_speed_10m",
+          "unit": "metre_per_second",
+          "notes": ""
+        },
+        "wind_gusts": {
+          "name": "wind_gusts_10m",
+          "unit": "metre_per_second",
+          "notes": "Maximum of the preceding hour."
+        },
+        "wind_direction": {
+          "name": "wind_direction_10m",
+          "unit": "degree",
+          "notes": ""
+        },
+        "shortwave_radiation": {
+          "name": "shortwave_radiation",
+          "unit": "watt_per_square_metre",
+          "notes": "Mean of the preceding hour."
+        },
+        "sunshine_duration": {
+          "name": "sunshine_duration",
+          "unit": "second",
+          "notes": "Seconds per hour upstream; converted to hours."
+        },
+        "reference_evapotranspiration": {
+          "name": "et0_fao_evapotranspiration",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "shortwave_radiation_tilted": {
+          "name": "global_tilted_irradiance",
+          "unit": "watt_per_square_metre",
+          "notes": "Mean of the preceding hour; needs tilt and azimuth."
+        },
+        "precipitation_probability": {
+          "name": "precipitation_probability",
+          "unit": "percent",
+          "notes": "Forecast only; for the preceding hour."
+        }
+      },
+      "daily": {
+        "air_temperature_mean": {
+          "name": "temperature_2m_mean",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "air_temperature_max": {
+          "name": "temperature_2m_max",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "air_temperature_min": {
+          "name": "temperature_2m_min",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "relative_humidity_mean": {
+          "name": "relative_humidity_2m_mean",
+          "unit": "percent",
+          "notes": ""
+        },
+        "precipitation": {
+          "name": "precipitation_sum",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "rain": {
+          "name": "rain_sum",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "wind_speed_max": {
+          "name": "wind_speed_10m_max",
+          "unit": "metre_per_second",
+          "notes": ""
+        },
+        "wind_gusts_max": {
+          "name": "wind_gusts_10m_max",
+          "unit": "metre_per_second",
+          "notes": ""
+        },
+        "wind_direction_dominant": {
+          "name": "wind_direction_10m_dominant",
+          "unit": "degree",
+          "notes": ""
+        },
+        "shortwave_radiation_sum": {
+          "name": "shortwave_radiation_sum",
+          "unit": "megajoule_per_square_metre",
+          "notes": ""
+        },
+        "sunshine_duration": {
+          "name": "sunshine_duration",
+          "unit": "second",
+          "notes": "Seconds per day upstream; converted to hours."
+        },
+        "reference_evapotranspiration": {
+          "name": "et0_fao_evapotranspiration",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "precipitation_probability_max": {
+          "name": "precipitation_probability_max",
+          "unit": "percent",
+          "notes": "Forecast only; daily maximum of the hourly values."
+        }
+      }
+    },
+    "archive": {
+      "reference_url": "https://open-meteo.com/en/docs/historical-weather-api",
+      "verified_on": "2026-11-07",
+      "hourly": {
+        "air_temperature": {
+          "name": "temperature_2m",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "relative_humidity": {
+          "name": "relative_humidity_2m",
+          "unit": "percent",
+          "notes": ""
+        },
+        "dew_point": {
+          "name": "dew_point_2m",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "vapour_pressure_deficit": {
+          "name": "vapour_pressure_deficit",
+          "unit": "kilopascal",
+          "notes": ""
+        },
+        "precipitation": {
+          "name": "precipitation",
+          "unit": "millimetre",
+          "notes": "Sum of the preceding hour."
+        },
+        "rain": {
+          "name": "rain",
+          "unit": "millimetre",
+          "notes": "Sum of the preceding hour."
+        },
+        "surface_pressure": {
+          "name": "surface_pressure",
+          "unit": "hectopascal",
+          "notes": ""
+        },
+        "sea_level_pressure": {
+          "name": "pressure_msl",
+          "unit": "hectopascal",
+          "notes": ""
+        },
+        "cloud_cover": {
+          "name": "cloud_cover",
+          "unit": "percent",
+          "notes": ""
+        },
+        "wind_speed": {
+          "name": "wind_speed_10m",
+          "unit": "metre_per_second",
+          "notes": ""
+        },
+        "wind_gusts": {
+          "name": "wind_gusts_10m",
+          "unit": "metre_per_second",
+          "notes": "Maximum of the preceding hour."
+        },
+        "wind_direction": {
+          "name": "wind_direction_10m",
+          "unit": "degree",
+          "notes": ""
+        },
+        "shortwave_radiation": {
+          "name": "shortwave_radiation",
+          "unit": "watt_per_square_metre",
+          "notes": "Mean of the preceding hour."
+        },
+        "sunshine_duration": {
+          "name": "sunshine_duration",
+          "unit": "second",
+          "notes": "Seconds per hour upstream; converted to hours."
+        },
+        "reference_evapotranspiration": {
+          "name": "et0_fao_evapotranspiration",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "shortwave_radiation_tilted": {
+          "name": "global_tilted_irradiance",
+          "unit": "watt_per_square_metre",
+          "notes": "Mean of the preceding hour; needs tilt and azimuth."
+        }
+      },
+      "daily": {
+        "air_temperature_mean": {
+          "name": "temperature_2m_mean",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "air_temperature_max": {
+          "name": "temperature_2m_max",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "air_temperature_min": {
+          "name": "temperature_2m_min",
+          "unit": "celsius",
+          "notes": ""
+        },
+        "relative_humidity_mean": {
+          "name": "relative_humidity_2m_mean",
+          "unit": "percent",
+          "notes": ""
+        },
+        "precipitation": {
+          "name": "precipitation_sum",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "rain": {
+          "name": "rain_sum",
+          "unit": "millimetre",
+          "notes": ""
+        },
+        "wind_speed_max": {
+          "name": "wind_speed_10m_max",
+          "unit": "metre_per_second",
+          "notes": ""
+        },
+        "wind_gusts_max": {
+          "name": "wind_gusts_10m_max",
+          "unit": "metre_per_second",
+          "notes": ""
+        },
+        "wind_direction_dominant": {
+          "name": "wind_direction_10m_dominant",
+          "unit": "degree",
+          "notes": ""
+        },
+        "shortwave_radiation_sum": {
+          "name": "shortwave_radiation_sum",
+          "unit": "megajoule_per_square_metre",
+          "notes": ""
+        },
+        "sunshine_duration": {
+          "name": "sunshine_duration",
+          "unit": "second",
+          "notes": "Seconds per day upstream; converted to hours."
+        },
+        "reference_evapotranspiration": {
+          "name": "et0_fao_evapotranspiration",
+          "unit": "millimetre",
+          "notes": ""
+        }
+      }
+    }
+  }
+}

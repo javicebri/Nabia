@@ -77,6 +77,21 @@ work live but are not documented yet are listed in `KNOWN_SPEC_GAPS`,
 and a test fails as soon as upstream documents them. Specifications
 are used as a checker, not to generate code.
 
+## Language-neutral contract
+
+Python is the reference implementation. Apps written in other
+languages (Flutter) cannot use it, so Nabia will also be ported to
+Dart, in this repository, as idiomatic Dart rather than a line-by-line
+clone. What both implementations must share is exported to
+`contract/` by `python -m tools.contract`: the catalog (units,
+conversions, variables), each provider's endpoints and mapping
+tables, the JSON Schema of the output models and golden conformance
+cases. Ports generate their code from it at development time and
+replay the cases in their tests: same call and provider response, same
+request sent and same series or error. An offline test fails while the
+committed files are stale. Unit conversions are declared as data (`(value - offset) /
+divisor`) so ports reproduce Python's results bit for bit.
+
 ## Errors
 
 `NabiaError` is the single root. Provider errors carry the provider id
@@ -131,3 +146,5 @@ requests or from what the provider reports.
 | 2026-11-07 | Scope rules: free sources only, no geocoding, no computed or derived data. |
 | 2026-11-07 | Precipitation probability (forecast) and tilted irradiance added; surfaces use a compass aspect (0 = north) translated per provider. |
 | 2026-11-07 | Spec snapshots stay local (git-ignored): development happens on one machine, nothing derived from upstream specs is published. |
+| 2026-11-07 | Python stays the reference; an idiomatic Dart port will live in this repository (monorepo) and build from the generated `contract/`. Credentials stay agnostic: the consuming app supplies them. |
+| 2026-11-07 | Unit conversions declared as affine data instead of code, so ports reproduce results exactly. |

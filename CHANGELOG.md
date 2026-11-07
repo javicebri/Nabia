@@ -9,6 +9,22 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+### Added
+
+- `Conversion` and `CONVERSIONS` in `nabia.catalog`: unit conversions
+  are declared as data, `(value - offset) / divisor`. Results are
+  unchanged, bit for bit.
+- `contract/`: language-neutral export of the catalog, the provider
+  tables and endpoints, the output model schema and golden
+  conformance cases (call, response, expected request and result),
+  for ports to other languages. Regenerated with
+  `python -m tools.contract` (not shipped in the wheel).
+
+### Removed
+
+- `nabia.catalog.units.Converter`, an undocumented type alias for the
+  former conversion lambdas.
+
 ## [0.3.0] - 2026-11-07
 
 ### Added

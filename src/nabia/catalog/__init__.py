@@ -4,7 +4,13 @@ Run ``python -m nabia.catalog`` to print the cross-provider table.
 """
 
 from nabia.catalog.table import NativeVariable, Values, VariableTable
-from nabia.catalog.units import Unit, can_convert, convert
+from nabia.catalog.units import (
+    CONVERSIONS,
+    Conversion,
+    Unit,
+    can_convert,
+    convert,
+)
 from nabia.catalog.variables import (
     VARIABLES,
     Aggregation,
@@ -14,8 +20,10 @@ from nabia.catalog.variables import (
 )
 
 __all__ = [
+    "CONVERSIONS",
     "VARIABLES",
     "Aggregation",
+    "Conversion",
     "NativeVariable",
     "Resolution",
     "Unit",

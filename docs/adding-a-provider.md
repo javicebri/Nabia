@@ -27,9 +27,13 @@ Use `providers/open_meteo/` as the reference implementation.
 3. **New canonical variables** go in `catalog/variables.py` (with a
    precise definition) before they are mapped. Ask the user when the
    provider definition differs (height, aggregation, interval).
-4. **New units** go in `catalog/units.py` with their conversion and a
-   test.
-5. **Register** the tables in `providers/registry.py`.
+4. **New units** go in `catalog/units.py` with their conversion
+   (`Conversion(offset=..., divisor=...)`) and a test.
+5. **Register** the tables in `providers/registry.py`, add an export
+   function for the provider to `tools/contract.py` and its
+   conformance cases to `tools/conformance.py` (copy the Open-Meteo
+   ones), and regenerate the contract with
+   `uv run python -m tools.contract`.
 6. **Tests**:
    - `tests/providers/<name>/` with trimmed real responses in
      `fixtures/` (scrub any credential or personal data).
