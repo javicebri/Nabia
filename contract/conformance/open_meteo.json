@@ -4604,6 +4604,1640 @@
       }
     },
     {
+      "name": "html_instead_of_json",
+      "description": "A 200 answer that is not JSON (e.g. a captive portal or proxy page) is a contract error.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {}
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "text": "<html><body><h1>502 Bad Gateway</h1></body></html>"
+      },
+      "request": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "forecast_days": "7",
+          "past_days": "0",
+          "daily": "rain_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "html_error_page",
+      "description": "An HTML 5xx page: no reason can be read, the status still classifies the error.",
+      "call": {
+        "operation": "forecast_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "rain"
+        ],
+        "options": {}
+      },
+      "response": {
+        "status": 502,
+        "headers": {},
+        "text": "<html><body><h1>502 Bad Gateway</h1></body></html>"
+      },
+      "request": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "forecast_days": "7",
+          "past_days": "0",
+          "daily": "rain_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_server",
+        "status_code": 502
+      }
+    },
+    {
+      "name": "boolean_in_column",
+      "description": "A boolean is not a number (lax parsing would read true as 1.0).",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              true,
+              2.0
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "numeric_string_in_column",
+      "description": "A number sent as text is a format change, not a number.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              "1.5",
+              2.0
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "column_not_a_list",
+      "description": "Every column is a list aligned with the time axis.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": 10.1,
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "invalid_date",
+      "description": "A daily date that does not exist.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-02-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              10.1,
+              9.6
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "time_not_a_list",
+      "description": "The time axis is a list.",
+      "call": {
+        "operation": "historical_hourly",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "air_temperature"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "hourly_units": {
+            "time": "unixtime",
+            "temperature_2m": "°C",
+            "relative_humidity_2m": "%",
+            "dew_point_2m": "°C",
+            "vapour_pressure_deficit": "kPa",
+            "precipitation": "mm",
+            "rain": "mm",
+            "surface_pressure": "hPa",
+            "pressure_msl": "hPa",
+            "cloud_cover": "%",
+            "wind_speed_10m": "m/s",
+            "wind_gusts_10m": "m/s",
+            "wind_direction_10m": "°",
+            "shortwave_radiation": "W/m²",
+            "sunshine_duration": "s",
+            "et0_fao_evapotranspiration": "mm",
+            "global_tilted_irradiance": "W/m²"
+          },
+          "hourly": {
+            "time": "1711839600",
+            "temperature_2m": [
+              6.1,
+              6.3,
+              5.5,
+              5.7
+            ],
+            "relative_humidity_2m": [
+              94,
+              92,
+              91,
+              91
+            ],
+            "dew_point_2m": [
+              5.2,
+              5.1,
+              4.2,
+              4.4
+            ],
+            "vapour_pressure_deficit": [
+              0.06,
+              0.08,
+              0.08,
+              0.08
+            ],
+            "precipitation": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "rain": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "surface_pressure": [
+              918.7,
+              919.3,
+              919.6,
+              919.2
+            ],
+            "pressure_msl": [
+              996.2,
+              996.8,
+              997.3,
+              996.8
+            ],
+            "cloud_cover": [
+              100,
+              100,
+              100,
+              100
+            ],
+            "wind_speed_10m": [
+              5.17,
+              5.03,
+              4.68,
+              3.48
+            ],
+            "wind_gusts_10m": [
+              8.5,
+              9.6,
+              8.5,
+              8.2
+            ],
+            "wind_direction_10m": [
+              227,
+              221,
+              228,
+              219
+            ],
+            "shortwave_radiation": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sunshine_duration": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "et0_fao_evapotranspiration": [
+              0.01,
+              0.01,
+              0.01,
+              0.01
+            ],
+            "global_tilted_irradiance": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "hourly": "temperature_2m",
+          "timeformat": "unixtime"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "float_timestamps",
+      "description": "Unix timestamps are integers; 1711839600.0 is not coerced.",
+      "call": {
+        "operation": "historical_hourly",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "air_temperature"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "hourly_units": {
+            "time": "unixtime",
+            "temperature_2m": "°C",
+            "relative_humidity_2m": "%",
+            "dew_point_2m": "°C",
+            "vapour_pressure_deficit": "kPa",
+            "precipitation": "mm",
+            "rain": "mm",
+            "surface_pressure": "hPa",
+            "pressure_msl": "hPa",
+            "cloud_cover": "%",
+            "wind_speed_10m": "m/s",
+            "wind_gusts_10m": "m/s",
+            "wind_direction_10m": "°",
+            "shortwave_radiation": "W/m²",
+            "sunshine_duration": "s",
+            "et0_fao_evapotranspiration": "mm",
+            "global_tilted_irradiance": "W/m²"
+          },
+          "hourly": {
+            "time": [
+              1711839600.0,
+              1711843200.0,
+              1711846800.0,
+              1711850400.0
+            ],
+            "temperature_2m": [
+              6.1,
+              6.3,
+              5.5,
+              5.7
+            ],
+            "relative_humidity_2m": [
+              94,
+              92,
+              91,
+              91
+            ],
+            "dew_point_2m": [
+              5.2,
+              5.1,
+              4.2,
+              4.4
+            ],
+            "vapour_pressure_deficit": [
+              0.06,
+              0.08,
+              0.08,
+              0.08
+            ],
+            "precipitation": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "rain": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "surface_pressure": [
+              918.7,
+              919.3,
+              919.6,
+              919.2
+            ],
+            "pressure_msl": [
+              996.2,
+              996.8,
+              997.3,
+              996.8
+            ],
+            "cloud_cover": [
+              100,
+              100,
+              100,
+              100
+            ],
+            "wind_speed_10m": [
+              5.17,
+              5.03,
+              4.68,
+              3.48
+            ],
+            "wind_gusts_10m": [
+              8.5,
+              9.6,
+              8.5,
+              8.2
+            ],
+            "wind_direction_10m": [
+              227,
+              221,
+              228,
+              219
+            ],
+            "shortwave_radiation": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sunshine_duration": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "et0_fao_evapotranspiration": [
+              0.01,
+              0.01,
+              0.01,
+              0.01
+            ],
+            "global_tilted_irradiance": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "hourly": "temperature_2m",
+          "timeformat": "unixtime"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "float_utc_offset",
+      "description": "The UTC offset is an integer number of seconds.",
+      "call": {
+        "operation": "historical_hourly",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "air_temperature"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600.0,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "hourly_units": {
+            "time": "unixtime",
+            "temperature_2m": "°C",
+            "relative_humidity_2m": "%",
+            "dew_point_2m": "°C",
+            "vapour_pressure_deficit": "kPa",
+            "precipitation": "mm",
+            "rain": "mm",
+            "surface_pressure": "hPa",
+            "pressure_msl": "hPa",
+            "cloud_cover": "%",
+            "wind_speed_10m": "m/s",
+            "wind_gusts_10m": "m/s",
+            "wind_direction_10m": "°",
+            "shortwave_radiation": "W/m²",
+            "sunshine_duration": "s",
+            "et0_fao_evapotranspiration": "mm",
+            "global_tilted_irradiance": "W/m²"
+          },
+          "hourly": {
+            "time": [
+              1711839600,
+              1711843200,
+              1711846800,
+              1711850400
+            ],
+            "temperature_2m": [
+              6.1,
+              6.3,
+              5.5,
+              5.7
+            ],
+            "relative_humidity_2m": [
+              94,
+              92,
+              91,
+              91
+            ],
+            "dew_point_2m": [
+              5.2,
+              5.1,
+              4.2,
+              4.4
+            ],
+            "vapour_pressure_deficit": [
+              0.06,
+              0.08,
+              0.08,
+              0.08
+            ],
+            "precipitation": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "rain": [
+              0.1,
+              0.1,
+              0.0,
+              0.0
+            ],
+            "surface_pressure": [
+              918.7,
+              919.3,
+              919.6,
+              919.2
+            ],
+            "pressure_msl": [
+              996.2,
+              996.8,
+              997.3,
+              996.8
+            ],
+            "cloud_cover": [
+              100,
+              100,
+              100,
+              100
+            ],
+            "wind_speed_10m": [
+              5.17,
+              5.03,
+              4.68,
+              3.48
+            ],
+            "wind_gusts_10m": [
+              8.5,
+              9.6,
+              8.5,
+              8.2
+            ],
+            "wind_direction_10m": [
+              227,
+              221,
+              228,
+              219
+            ],
+            "shortwave_radiation": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sunshine_duration": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "et0_fao_evapotranspiration": [
+              0.01,
+              0.01,
+              0.01,
+              0.01
+            ],
+            "global_tilted_irradiance": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "hourly": "temperature_2m",
+          "timeformat": "unixtime"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "latitude_as_string",
+      "description": "Coordinates are numbers.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": "40.386642",
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              10.1,
+              9.6
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "elevation_as_string",
+      "description": "The elevation is a number or null.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": "667",
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              10.1,
+              9.6
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "timezone_as_number",
+      "description": "The zone name is a string.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": 3600,
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              10.1,
+              9.6
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "missing_timezone",
+      "description": "A required top-level field is absent.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 40.386642,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              10.1,
+              9.6
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
+      "name": "coordinates_out_of_range",
+      "description": "Coordinates outside WGS84 cannot form a valid series.",
+      "call": {
+        "operation": "historical_daily",
+        "location": {
+          "latitude": 40.42,
+          "longitude": -3.7
+        },
+        "variables": [
+          "precipitation"
+        ],
+        "options": {
+          "start": "2024-03-31",
+          "end": "2024-03-31"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "latitude": 95.0,
+          "longitude": -3.6760864,
+          "utc_offset_seconds": 3600,
+          "timezone": "Europe/Madrid",
+          "timezone_abbreviation": "GMT+1",
+          "elevation": 667.0,
+          "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_mean": "°C",
+            "temperature_2m_max": "°C",
+            "temperature_2m_min": "°C",
+            "relative_humidity_2m_mean": "%",
+            "precipitation_sum": "mm",
+            "rain_sum": "mm",
+            "wind_speed_10m_max": "m/s",
+            "wind_gusts_10m_max": "m/s",
+            "wind_direction_10m_dominant": "°",
+            "shortwave_radiation_sum": "MJ/m²",
+            "et0_fao_evapotranspiration": "mm",
+            "sunshine_duration": "s"
+          },
+          "daily": {
+            "time": [
+              "2024-03-30",
+              "2024-03-31"
+            ],
+            "temperature_2m_mean": [
+              6.9,
+              6.8
+            ],
+            "temperature_2m_max": [
+              11.1,
+              10.9
+            ],
+            "temperature_2m_min": [
+              3.5,
+              4.5
+            ],
+            "relative_humidity_2m_mean": [
+              83,
+              83
+            ],
+            "precipitation_sum": [
+              10.1,
+              9.6
+            ],
+            "rain_sum": [
+              9.9,
+              9.6
+            ],
+            "wind_speed_10m_max": [
+              6.72,
+              8.41
+            ],
+            "wind_gusts_10m_max": [
+              12.7,
+              15.3
+            ],
+            "wind_direction_10m_dominant": [
+              187,
+              217
+            ],
+            "shortwave_radiation_sum": [
+              11.02,
+              11.72
+            ],
+            "et0_fao_evapotranspiration": [
+              1.58,
+              1.57
+            ],
+            "sunshine_duration": [
+              12623.88,
+              18786.74
+            ]
+          }
+        }
+      },
+      "request": {
+        "url": "https://archive-api.open-meteo.com/v1/archive",
+        "params": {
+          "latitude": "40.42",
+          "longitude": "-3.7",
+          "timezone": "auto",
+          "temperature_unit": "celsius",
+          "wind_speed_unit": "ms",
+          "precipitation_unit": "mm",
+          "start_date": "2024-03-31",
+          "end_date": "2024-03-31",
+          "daily": "precipitation_sum",
+          "timeformat": "iso8601"
+        }
+      },
+      "expected": {
+        "error": "provider_contract"
+      }
+    },
+    {
       "name": "connection_failure",
       "description": "The provider cannot be reached.",
       "call": {

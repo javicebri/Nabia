@@ -123,7 +123,12 @@ dart test
 ```
 
 Or, from the repository root, every check at once (also the `dart`
-pre-commit hook): `uv run python -m tools.dart`.
+pre-commit hook): `uv run python -m tools.dart`. Line coverage of
+`lib/` (kept at 100%, like Python's):
+`uv run python -m tools.dart coverage`.
+
+Live tests against the real APIs are skipped by default:
+`dart test --run-skipped -t live`.
 
 - `lib/src/generated/` comes from `../contract` (never edit it);
   `test/contract_test.dart` fails while it is stale.

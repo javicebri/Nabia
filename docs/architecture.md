@@ -39,7 +39,9 @@ import from `providers/`. Providers never import each other.
 1. **Raw schemas** (`schemas.py`) mirror the upstream payload. When an
    API changes, this is usually the only file to touch. Unknown fields
    are ignored; missing or retyped fields raise
-   `ProviderContractError`.
+   `ProviderContractError`. Validation is strict (`RawModel`): numbers
+   sent as text, booleans or floats where integers belong are never
+   coerced.
 2. **Output models** (`core/models.py`) are the stable contract:
    canonical variables, canonical units, timezone-aware timestamps,
    immutable, JSON round-trippable.
@@ -154,4 +156,5 @@ requests or from what the provider reports.
 | 2026-11-07 | Shared behaviour is specified once as conformance cases (Smithy protocol-test style) replayed by every implementation; Python-only tests cover the Python API surface. Contract-first IDL generation (Smithy, OpenAPI) reconsidered if more languages or many providers appear. |
 | 2026-11-07 | `RateLimitError.retry_after` reports the provider's requested wait uncapped; only Nabia's own retry sleeps are capped at 30 s. |
 | 2026-11-07 | Dart port: pure Dart package, `package:http` (injectable client), `package:timezone` with the full IANA database kept apart from the app's global state, one shared tag for Python and Dart, `publish_to: none`. |
+| 2026-11-07 | Raw schemas validate in pydantic strict mode (`RawModel`): lax mode had silently turned `true` into 1.0 and numeric text into numbers. |
 | 2026-11-07 | Dart idioms: `Future` APIs, `ArgumentError` for invalid arguments, sealed `NabiaException` hierarchy for run-time failures, `TZDateTime` for hourly and `CalendarDate` for daily time axes. |

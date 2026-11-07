@@ -85,7 +85,8 @@ class Case:
         options: Keyword arguments, as JSON values.
         fixture: File in the provider's ``fixtures/`` used as body.
         edit: Change applied to a copy of the fixture body.
-        body: Response body when there is no fixture.
+        body: JSON response body when there is no fixture.
+        text: Non-JSON response body (e.g. an HTML page from a proxy).
         status: HTTP status of the response.
         headers: HTTP headers of the response.
         failure: Network failure instead of a response
@@ -103,6 +104,7 @@ class Case:
     fixture: str | None = None
     edit: Callable[[Json], None] | None = None
     body: Json | None = None
+    text: str | None = None
     status: int = 200
     headers: Mapping[str, str] = field(default_factory=dict)
     failure: str | None = None
@@ -114,8 +116,9 @@ class Case:
             problems.append(f"unknown outcome {self.outcome!r}")
         if self.outcome == SERIES and self.message_contains is not None:
             problems.append("message_contains needs an error outcome")
-        if self.fixture is not None and self.body is not None:
-            problems.append("give a fixture or a body, not both")
+        bodies = [self.fixture, self.body, self.text]
+        if sum(item is not None for item in bodies) > 1:
+            problems.append("give one of fixture, body or text")
         if self.edit is not None and self.fixture is None:
             problems.append("edit needs a fixture")
         if self.failure not in (None, CONNECTION_FAILURE):
@@ -128,7 +131,8 @@ class Case:
     @property
     def answers_with_http(self) -> bool:
         """Whether the case defines an HTTP response."""
-        return self.fixture is not None or self.body is not None
+        bodies = (self.fixture, self.body, self.text)
+        return any(item is not None for item in bodies)
 
     def call(self) -> Json:
         """Return the call in neutral, JSON form."""
@@ -145,6 +149,12 @@ class Case:
             return {"failure": self.failure}
         if not self.answers_with_http:
             return None
+        if self.text is not None:
+            return {
+                "status": self.status,
+                "headers": dict(self.headers),
+                "text": self.text,
+            }
         body = self.body
         if self.fixture is not None:
             path = fixtures / self.fixture
@@ -164,6 +174,12 @@ def mock_response(router: respx.MockRouter, response: Json) -> None:
     route = router.get(url__regex=".*")
     if response.get("failure") == CONNECTION_FAILURE:
         route.side_effect = httpx.ConnectError("simulated failure")
+    elif "text" in response:
+        route.respond(
+            response["status"],
+            headers={"Content-Type": "text/html", **response["headers"]},
+            text=response["text"],
+        )
     else:
         route.respond(
             response["status"],

@@ -170,6 +170,110 @@ void main() {
       };
       expect(() => TimeSeries.fromJson(hourly), throwsFormatException);
     });
+
+    final json = _daily().toJson();
+    final hourly = {...json, 'resolution': 'hourly'};
+    final invalid = <String, Map<String, Object?>>{
+      'daily time not text': {
+        ...json,
+        'time': [1, 2],
+      },
+      'hourly time not text': {
+        ...hourly,
+        'time': [1],
+      },
+      'hourly time without offset': {
+        ...hourly,
+        'time': ['2024-03-30'],
+      },
+      'impossible hourly time': {
+        ...hourly,
+        'time': ['2024-02-30T00:00:00+01:00'],
+      },
+      'values not lists': {
+        ...json,
+        'values': {'precipitation': 5},
+      },
+      'values not numbers': {
+        ...json,
+        'values': {
+          'precipitation': ['1', null],
+        },
+      },
+      'unknown variable': {
+        ...json,
+        'values': {
+          'snow_on_mars': [1, 2],
+        },
+      },
+      'misaligned values': {
+        ...json,
+        'values': {
+          'precipitation': [1],
+        },
+      },
+      'unknown source kind': {...json, 'source_kind': 'guess'},
+      'missing provider': {...json}..remove('provider'),
+      'provider not text': {...json, 'provider': 5},
+      'source not text': {...json, 'source': 5},
+      'location not an object': {...json, 'location': 'Madrid'},
+      'latitude not a number': {
+        ...json,
+        'location': {'latitude': 'x', 'longitude': 0},
+      },
+      'latitude out of range': {
+        ...json,
+        'location': {'latitude': 95, 'longitude': 0},
+      },
+      'elevation not a number': {...json, 'elevation': 'high'},
+      'surface not an object': {...json, 'surface': 'flat'},
+      'surface out of range': {
+        ...json,
+        'surface': {'tilt': 95, 'aspect': 0},
+      },
+      'time not a list': {...json, 'time': '2024-03-30'},
+    };
+    for (final MapEntry(key: name, value: data) in invalid.entries) {
+      test('fromJson rejects $name', () {
+        expect(() => TimeSeries.fromJson(data), throwsFormatException);
+      });
+    }
+
+    test('each kind reads only its own resolution', () {
+      expect(() => HourlySeries.fromJson(json), throwsFormatException);
+      expect(() => DailySeries.fromJson(hourly), throwsFormatException);
+    });
+
+    test('compare and hash by content', () {
+      expect(_daily(), _daily());
+      expect(_daily().hashCode, _daily().hashCode);
+      expect(
+        _daily(
+          values: {
+            Variable.precipitation: [1.5, 0.0],
+          },
+        ),
+        isNot(_daily()),
+      );
+      expect(
+        CalendarDate(2024, 1, 2).hashCode,
+        CalendarDate(2024, 1, 2).hashCode,
+      );
+      expect(
+        _madrid.hashCode,
+        GeoPoint(latitude: 40.42, longitude: -3.7).hashCode,
+      );
+      expect(Surface(tilt: 30, aspect: 180), Surface(tilt: 30, aspect: 180));
+      expect(
+        Surface(tilt: 30, aspect: 180),
+        isNot(Surface(tilt: 30, aspect: 0)),
+      );
+      expect('$_madrid', 'GeoPoint(40.42, -3.7)');
+      expect(
+        '${Surface(tilt: 30, aspect: 180)}',
+        'Surface(tilt: 30.0, aspect: 180.0)',
+      );
+    });
   });
 
   group('timestamps', () {

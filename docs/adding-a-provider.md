@@ -18,8 +18,9 @@ Use `providers/open_meteo/` as the reference implementation.
      parameters when the API allows it. Every public constant here is
      exported to the contract, so keep them plain data (str, numbers,
      dates, enums, mappings, tuples); logic goes in functions.
-   - `schemas.py`: pydantic models mirroring the raw JSON; declare
-     only what is used.
+   - `schemas.py`: models mirroring the raw JSON, subclassing
+     `nabia.core.schemas.RawModel` (strict: nothing is coerced);
+     declare only what is used.
    - `parser.py`: raw schema -> `HourlySeries`/`DailySeries`, using
      `VariableTable.extract` (it checks columns, units and empty
      columns). Fill `source`, `source_kind` and `attribution` only

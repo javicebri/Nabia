@@ -21,7 +21,9 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
   `uv run python -m tools.contract` (`--check` only verifies)
 - Dart port, inside `dart/`: `dart run tool/generate.dart` (after the
   contract changes), `dart format .`, `dart analyze --fatal-infos`,
-  `dart test`; all at once from the root: `uv run python -m tools.dart`
+  `dart test`; all at once from the root: `uv run python -m tools.dart`;
+  coverage: `uv run python -m tools.dart coverage`; live:
+  `dart test --run-skipped -t live`
 - Create/refresh a spec snapshot (local only, git-ignored; never
   commit it): `uv run python -m tests.providers.<name>.spec`
 

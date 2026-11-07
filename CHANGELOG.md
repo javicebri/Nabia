@@ -36,6 +36,11 @@ they are always listed under **Changed** or **Removed**.
 
 ### Fixed
 
+- Raw provider responses are validated strictly (new base
+  `nabia.core.schemas.RawModel`). Lax parsing silently converted
+  numbers sent as text, booleans (`true` became 1.0 mm of rain) and
+  whole floats where integers belong; they now raise
+  `ProviderContractError`, as the project rules require.
 - `RateLimitError.retry_after` reports the wait the provider asked for.
   It was capped at 30 s, the limit Nabia applies to its own waits
   between retries, so callers could retry too early.

@@ -48,6 +48,41 @@ def _unknown_zone(body: Json) -> None:
     body["timezone"] = "Unknown/Zone"
 
 
+def _top(name: str, value: Any) -> Callable[[Json], None]:
+    def edit(body: Json) -> None:
+        body[name] = value
+
+    return edit
+
+
+def _float_timestamps(body: Json) -> None:
+    body["hourly"]["time"] = [float(t) for t in body["hourly"]["time"]]
+
+
+def _malformed(
+    name: str,
+    description: str,
+    edit: Callable[[Json], None],
+    *,
+    hourly: bool = False,
+) -> Case:
+    # Upstream format changes must fail loudly, never be coerced.
+    return Case(
+        name=name,
+        description=description,
+        operation="historical_hourly" if hourly else "historical_daily",
+        location=MADRID,
+        variables=["air_temperature"] if hourly else ["precipitation"],
+        outcome="provider_contract",
+        options=ONE_DAY,
+        fixture="archive_hourly.json" if hourly else "archive_daily.json",
+        edit=edit,
+    )
+
+
+_HTML = "<html><body><h1>502 Bad Gateway</h1></body></html>"
+
+
 def _series(
     name: str,
     description: str,
@@ -349,6 +384,90 @@ _FAILED_RESPONSE = [
         outcome="provider_server",
         body={"error": True, "reason": "Service unavailable"},
         status=503,
+    ),
+    Case(
+        name="html_instead_of_json",
+        description="A 200 answer that is not JSON (e.g. a captive portal"
+        " or proxy page) is a contract error.",
+        operation="forecast_daily",
+        location=MADRID,
+        variables=RAIN,
+        outcome="provider_contract",
+        text=_HTML,
+    ),
+    Case(
+        name="html_error_page",
+        description="An HTML 5xx page: no reason can be read, the status"
+        " still classifies the error.",
+        operation="forecast_daily",
+        location=MADRID,
+        variables=RAIN,
+        outcome="provider_server",
+        text=_HTML,
+        status=502,
+    ),
+    _malformed(
+        "boolean_in_column",
+        "A boolean is not a number (lax parsing would read true as 1.0).",
+        _set("daily", "precipitation_sum", [True, 2.0]),
+    ),
+    _malformed(
+        "numeric_string_in_column",
+        "A number sent as text is a format change, not a number.",
+        _set("daily", "precipitation_sum", ["1.5", 2.0]),
+    ),
+    _malformed(
+        "column_not_a_list",
+        "Every column is a list aligned with the time axis.",
+        _set("daily", "precipitation_sum", 10.1),
+    ),
+    _malformed(
+        "invalid_date",
+        "A daily date that does not exist.",
+        _set("daily", "time", ["2024-02-30", "2024-03-31"]),
+    ),
+    _malformed(
+        "time_not_a_list",
+        "The time axis is a list.",
+        _set("hourly", "time", "1711839600"),
+        hourly=True,
+    ),
+    _malformed(
+        "float_timestamps",
+        "Unix timestamps are integers; 1711839600.0 is not coerced.",
+        _float_timestamps,
+        hourly=True,
+    ),
+    _malformed(
+        "float_utc_offset",
+        "The UTC offset is an integer number of seconds.",
+        _top("utc_offset_seconds", 3600.0),
+        hourly=True,
+    ),
+    _malformed(
+        "latitude_as_string",
+        "Coordinates are numbers.",
+        _top("latitude", "40.386642"),
+    ),
+    _malformed(
+        "elevation_as_string",
+        "The elevation is a number or null.",
+        _top("elevation", "667"),
+    ),
+    _malformed(
+        "timezone_as_number",
+        "The zone name is a string.",
+        _top("timezone", 3600),
+    ),
+    _malformed(
+        "missing_timezone",
+        "A required top-level field is absent.",
+        _drop("timezone"),
+    ),
+    _malformed(
+        "coordinates_out_of_range",
+        "Coordinates outside WGS84 cannot form a valid series.",
+        _top("latitude", 95.0),
     ),
     Case(
         name="connection_failure",

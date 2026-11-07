@@ -334,11 +334,7 @@ final class HourlySeries extends TimeSeries<tz.TZDateTime> {
   factory HourlySeries.fromJson(Map<String, Object?> json) {
     final fields = _SeriesFields.read(json, Resolution.hourly);
     final stamps = [
-      for (final item in fields.rawTime)
-        if (item is String)
-          _parseOffsetDateTime(item)
-        else
-          throw const FormatException('time: expected strings'),
+      for (final item in fields.rawTime) _parseOffsetDateTime(_timeText(item)),
     ];
     final zone = zoneOrFixedOffset(
       fields.timezone,
@@ -411,11 +407,7 @@ final class DailySeries extends TimeSeries<CalendarDate> {
   factory DailySeries.fromJson(Map<String, Object?> json) {
     final fields = _SeriesFields.read(json, Resolution.daily);
     final time = [
-      for (final item in fields.rawTime)
-        if (item is String)
-          CalendarDate.parse(item)
-        else
-          throw const FormatException('time: expected strings'),
+      for (final item in fields.rawTime) CalendarDate.parse(_timeText(item)),
     ];
     _formatIfProblem(
       seriesProblem(time, fields.values, fields.surface, _compareDates),
@@ -523,6 +515,11 @@ void _throwIfProblem(String? problem) {
 
 void _formatIfProblem(String? problem) {
   if (problem != null) throw FormatException(problem);
+}
+
+String _timeText(Object? item) {
+  if (item is String) return item;
+  throw FormatException('time: expected strings, got $item');
 }
 
 final _offsetDateTime = RegExp(

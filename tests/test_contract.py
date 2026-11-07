@@ -128,7 +128,8 @@ def test_conformance_series_load_back_unchanged() -> None:
     [
         ({"outcome": "boom"}, "unknown outcome"),
         ({"message_contains": "x"}, "needs an error outcome"),
-        ({"fixture": "a.json", "body": {}}, "not both"),
+        ({"fixture": "a.json", "body": {}}, "one of fixture, body or text"),
+        ({"body": {}, "text": "<html>"}, "one of fixture, body or text"),
         ({"edit": lambda body: None}, "edit needs a fixture"),
         ({"failure": "dns"}, "unknown failure"),
         ({"failure": "connection", "body": {}}, "has no HTTP response"),

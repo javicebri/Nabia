@@ -54,10 +54,14 @@ Future<void> _replay(String provider, Map<String, Object?> testCase) async {
     final headers = (response['headers']! as Map<String, Object?>).map(
       (name, value) => MapEntry(name, value! as String),
     );
+    final text = response['text'] as String?;
     return http.Response.bytes(
-      utf8.encode(jsonEncode(response['body'])),
+      utf8.encode(text ?? jsonEncode(response['body'])),
       response['status']! as int,
-      headers: {...headers, 'content-type': 'application/json'},
+      headers: {
+        'content-type': text == null ? 'application/json' : 'text/html',
+        ...headers,
+      },
       request: request,
     );
   });

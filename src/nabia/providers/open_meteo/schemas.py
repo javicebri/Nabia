@@ -2,15 +2,18 @@
 
 Only the fields Nabia relies on are declared. Unknown top-level fields
 are ignored, so additive upstream changes do not break parsing, while
-missing or retyped fields raise a contract error.
+missing or retyped fields raise a contract error (validation is strict,
+see :class:`~nabia.core.schemas.RawModel`).
 """
 
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
+
+from nabia.core.schemas import RawModel
 
 
-class _Block(BaseModel):
+class _Block(RawModel):
     """Time axis plus one column per requested variable."""
 
     model_config = ConfigDict(extra="allow")
@@ -35,7 +38,7 @@ class DailyBlock(_Block):
     time: list[date]
 
 
-class OpenMeteoResponse(BaseModel):
+class OpenMeteoResponse(RawModel):
     """Successful forecast or archive response."""
 
     model_config = ConfigDict(extra="ignore")
@@ -51,7 +54,7 @@ class OpenMeteoResponse(BaseModel):
     daily: DailyBlock | None = None
 
 
-class ErrorResponse(BaseModel):
+class ErrorResponse(RawModel):
     """Error payload returned with HTTP 400."""
 
     error: bool

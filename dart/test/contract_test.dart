@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:nabia/nabia.dart';
+import 'package:nabia/src/catalog/conversion.dart' show convertValues;
 import 'package:test/test.dart';
 
 import '../tool/generate.dart' as generator;
@@ -77,8 +78,30 @@ void main() {
     for (final unit in Unit.values) {
       expect(Unit.fromSymbol(unit.symbol), unit);
     }
+    for (final resolution in Resolution.values) {
+      expect(Resolution.fromKey(resolution.key), resolution);
+    }
+    for (final aggregation in Aggregation.values) {
+      expect(Aggregation.fromKey(aggregation.key), aggregation);
+    }
+    for (final kind in SourceKind.values) {
+      expect(SourceKind.fromKey(kind.key), kind);
+    }
     expect(() => Variable.fromKey('snowfall_on_mars'), throwsArgumentError);
+    expect(() => Unit.fromSymbol('furlong'), throwsArgumentError);
+    expect(() => Resolution.fromKey('weekly'), throwsArgumentError);
+    expect(() => Aggregation.fromKey('median'), throwsArgumentError);
     expect(() => SourceKind.fromKey('guess'), throwsArgumentError);
+  });
+
+  test('undefined conversions are rejected', () {
+    expect(canConvert(Unit.celsius, Unit.percent), isFalse);
+    expect(conversionBetween(Unit.celsius, Unit.kelvin), isNull);
+    expect(
+      () => convertValues([1.0], Unit.celsius, Unit.percent),
+      throwsArgumentError,
+    );
+    expect(convertValues([1.0, null], Unit.hour, Unit.hour), [1.0, null]);
   });
 
   test('supported variables follow the table order', () {

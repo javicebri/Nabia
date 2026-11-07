@@ -189,11 +189,63 @@ void main() {
       throwsArgumentError,
     );
     expect(
+      () => ProviderHttp(
+        provider: 'p',
+        options: const HttpOptions(userAgent: ''),
+      ),
+      throwsArgumentError,
+    );
+    expect(
       () => OpenMeteoClient(
         endpoints: const OpenMeteoEndpoints(forecastUrl: 'http://x.test/v1'),
       ),
       throwsArgumentError,
     );
+  });
+
+  test('a broken error parser does not hide the error', () async {
+    final layer = ProviderHttp(
+      provider: 'test',
+      options: const HttpOptions(maxRetries: 0),
+      client: MockClient(
+        (_) async => http.Response('', 400, reasonPhrase: 'Bad Request'),
+      ),
+      errorParser: (_) => throw const FormatException('broken'),
+    );
+    await expectLater(
+      layer.getJson(_url),
+      throwsA(
+        isA<ProviderHttpException>().having(
+          (e) => e.message,
+          'message',
+          'test: HTTP 400 - Bad Request',
+        ),
+      ),
+    );
+  });
+
+  test('long error details are truncated', () async {
+    final layer = ProviderHttp(
+      provider: 'test',
+      options: const HttpOptions(maxRetries: 0),
+      client: MockClient((_) async => http.Response('', 418)),
+      errorParser: (_) => 'x' * 1000,
+    );
+    await expectLater(
+      layer.getJson(_url),
+      throwsA(
+        isA<ProviderHttpException>().having(
+          (e) => e.message.length,
+          'length',
+          'test: HTTP 418 - '.length + 300,
+        ),
+      ),
+    );
+  });
+
+  test('closing the client it created', () {
+    ProviderHttp(provider: 'p').close();
+    OpenMeteoClient().close();
   });
 
   test('closes only the client it created', () {

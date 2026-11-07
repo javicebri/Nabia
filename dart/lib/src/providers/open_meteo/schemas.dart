@@ -45,9 +45,9 @@ final class OpenMeteoResponse {
       longitude: _number(root, 'longitude'),
       elevation: _optionalNumber(root, 'elevation'),
       timezone: _string(root, 'timezone'),
-      utcOffsetSeconds: _int(root, 'utc_offset_seconds', 'utc_offset_seconds'),
+      utcOffsetSeconds: _int(root['utc_offset_seconds'], 'utc_offset_seconds'),
       hourlyUnits: _units(root, 'hourly_units'),
-      hourly: _block(root, 'hourly', (item, path) => _int(item, null, path)),
+      hourly: _block(root, 'hourly', _int),
       dailyUnits: _units(root, 'daily_units'),
       daily: _block(root, 'daily', _date),
     );
@@ -116,14 +116,9 @@ double? _optionalNumber(Map<String, Object?> json, String key) =>
       _ => throw _invalid(key, 'a number or null'),
     };
 
-int _int(Object? source, String? key, String path) {
-  final value = key == null ? source : _object(source, '<root>')[key];
-  if (value is int) return value;
-  if (value is double && value == value.truncateToDouble()) {
-    return value.toInt();
-  }
-  throw _invalid(path, 'an integer');
-}
+/// Strict, as in the Python reference: `3600.0` is not an integer.
+int _int(Object? value, String path) =>
+    value is int ? value : throw _invalid(path, 'an integer');
 
 CalendarDate _date(Object? value, String path) {
   if (value is String) {

@@ -53,6 +53,9 @@ Functions in a provider's `mapping.py` (e.g. Open-Meteo's
 - In a provider file, `unit` is the unit the provider reports. If the
   response reports a different unit, or a requested column is missing,
   it is a contract error: never coerce.
+- Responses are parsed strictly: JSON integers are accepted where
+  numbers are expected, but numbers sent as text, booleans and floats
+  where integers belong (`3600.0`) are contract errors.
 
 ## Conformance cases
 
@@ -63,9 +66,10 @@ replays the committed cases in `tests/test_conformance.py` and Dart in
 `dart/test/conformance_test.dart`; every port replays them the same
 way, with retries disabled:
 
-1. Mock HTTP so that any request gets `response`: either an HTTP
-   answer (`status`, `headers`, JSON `body`) or
-   `{"failure": "connection"}`, a network failure.
+1. Mock HTTP so that any request gets `response`: an HTTP answer
+   (`status`, `headers` and either a JSON `body` or a non-JSON `text`
+   such as an HTML page) or `{"failure": "connection"}`, a network
+   failure.
 2. Call `call.operation` with `call.location`, `call.variables` and
    `call.options`. Option names are Python keyword names
    (`past_days`); map them to the port's own style (`pastDays`).
