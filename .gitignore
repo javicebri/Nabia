@@ -1,0 +1,42 @@
+# --- Secrets: never commit credentials -------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.cdsapirc
+.adsapirc
+*service-key*.json
+*service_key*.json
+secrets/
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+
+# --- Tooling caches ---------------------------------------------------------
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# --- Local data and HTTP cache ----------------------------------------------
+*.sqlite3
+data/
+
+# --- Editors and OS ---------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Claude Code: personal settings stay local ------------------------------
+.claude/settings.local.json

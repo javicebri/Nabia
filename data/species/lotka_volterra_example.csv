@@ -1,4 +1,0 @@
-name,alpha,beta,delta,gamma,D_prey,D_predator,notes
-rabbit_fox,1.0,0.1,0.075,1.5,0.1,0.05,Classic Lotka-Volterra parameters
-high_predation,1.0,0.2,0.1,1.5,0.1,0.05,Higher predation rate
-slow_diffusion,1.0,0.1,0.075,1.5,0.01,0.005,Slow spatial spread
