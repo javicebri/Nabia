@@ -9,6 +9,8 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-07
+
 ### Added
 
 - Project rewritten as a library. The previous Lotka-Volterra
