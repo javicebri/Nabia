@@ -28,9 +28,9 @@ Install a tagged version from Git, so each project controls when it
 upgrades:
 
 ```bash
-pip install "nabia[pandas] @ git+https://github.com/javicebri/Nabia@v0.1.0"
+pip install "nabia[pandas] @ git+https://github.com/javicebri/Nabia@v0.4.0"
 # or, with uv
-uv add git+https://github.com/javicebri/Nabia --tag v0.1.0 --extra pandas
+uv add git+https://github.com/javicebri/Nabia --tag v0.4.0 --extra pandas
 ```
 
 The `pandas` extra is optional and only needed for `to_dataframe()`.

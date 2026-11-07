@@ -9,6 +9,8 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-07
+
 ### Added
 
 - Dart package in `dart/` (pure Dart, for Flutter apps): Open-Meteo

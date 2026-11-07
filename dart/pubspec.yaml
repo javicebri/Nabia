@@ -3,7 +3,7 @@ description: >-
   Typed, normalized access to public weather, climate, agricultural and
   forestry data APIs. Dart port of the Nabia Python library.
 # Same version as the Python package: one shared tag per release.
-version: 0.3.0
+version: 0.4.0
 repository: https://github.com/javicebri/Nabia
 # Distributed from Git tags only (git + path: dart + ref: vX.Y.Z).
 publish_to: none
