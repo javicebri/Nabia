@@ -1,0 +1,7 @@
+Third-party material included in this repository
+================================================
+
+tests/providers/open_meteo/fixtures/*.json
+    Weather data by Open-Meteo.com (https://open-meteo.com/), licensed
+    under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+    Changes: trimmed to a few time steps; "generationtime_ms" removed.

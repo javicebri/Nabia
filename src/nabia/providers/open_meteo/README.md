@@ -10,6 +10,14 @@ non-commercial use.
 
 Equivalence tables: `mapping.py` (last verified: see `VERIFIED_ON`).
 
+Published specification: one OpenAPI file per API in
+<https://github.com/open-meteo/open-meteo/tree/main/openapi>
+(`forecast.yml`, `historical-weather.yml`), watched by
+`tests/providers/open_meteo/spec.py`. It lags the live API: the daily
+forecast variables `temperature_2m_mean` and
+`relative_humidity_2m_mean` work but are undocumented there
+(`KNOWN_SPEC_GAPS`, checked 2026-11-07).
+
 ## Terms of use
 
 - Free tier is for **non-commercial use** only; commercial use needs a

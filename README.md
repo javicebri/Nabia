@@ -75,8 +75,13 @@ All output uses the canonical catalog in `nabia.catalog`. Print the
 cross-provider equivalence table with:
 
 ```bash
-python -m nabia.catalog
+python -m nabia.catalog          # in a project where Nabia is installed
+uv run python -m nabia.catalog   # inside this repository
 ```
+
+Use the Python of the environment where Nabia is installed (>= 3.12);
+a system interpreter without Nabia fails with
+`ModuleNotFoundError: No module named 'nabia'`.
 
 Requesting a variable a provider does not offer raises
 `UnsupportedVariableError` before any network call.

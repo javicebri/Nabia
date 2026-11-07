@@ -33,6 +33,11 @@ Use `providers/open_meteo/` as the reference implementation.
      `fixtures/` (scrub any credential or personal data).
    - `tests/live/test_<name>_live.py` requesting every mapped variable,
      marked `live`. Keys come from the environment; skip when absent.
+   - If the provider publishes a specification: `tests/providers/<name>/
+     spec.py` (sources, `extract`, `used`, `KNOWN_SPEC_GAPS`), an
+     offline `test_spec.py` and a live spec test. Copy the Open-Meteo
+     ones and reuse the helpers in `tests/specs.py`. The snapshot is
+     generated locally and git-ignored; never commit it.
 7. **Docs**: provider row in `README.md`, variables in `.env.example`,
    entry in `CHANGELOG.md`.
 
@@ -40,10 +45,12 @@ Use `providers/open_meteo/` as the reference implementation.
 
 1. Reproduce: `uv run python -m pytest -m live -k <name>`.
 2. Read the error: `ProviderContractError` names the missing column or
-   field; `UnitMismatchError` shows reported vs expected unit.
+   field; `UnitMismatchError` shows reported vs expected unit; a spec
+   test lists values added or removed in the published specification.
 3. Check the provider changelog/docs and update, in this order:
    `schemas.py` (structure), `mapping.py` (names/units),
    `parser.py` (logic). Ask the user if a definition changed meaning.
-4. Refresh affected fixtures with a trimmed real response.
+4. Refresh affected fixtures with a trimmed real response, and the
+   spec snapshot with `uv run python -m tests.providers.<name>.spec`.
 5. Run the full suite, bump `verified_on`, note it in the provider
    README and `CHANGELOG.md`, and tag a patch release.

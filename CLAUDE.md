@@ -16,6 +16,8 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
 - Lint/format: `uv run ruff check --fix . ; uv run ruff format .`
 - All hooks: `uv run python -m pre_commit run --all-files`
 - Equivalence table: `uv run python -m nabia.catalog`
+- Create/refresh a spec snapshot (local only, git-ignored; never
+  commit it): `uv run python -m tests.providers.<name>.spec`
 
 ## Layout
 

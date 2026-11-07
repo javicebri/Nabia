@@ -9,6 +9,19 @@ they are always listed under **Changed** or **Removed**.
 
 ## [Unreleased]
 
+### Added
+
+- Upstream specification watcher: Open-Meteo's published OpenAPI files
+  are reduced to a local, git-ignored JSON snapshot; offline tests
+  check every value the client sends, live tests report upstream
+  additions and removals.
+- `NOTICE` crediting the Open-Meteo data (CC BY 4.0) in test fixtures.
+
+### Fixed
+
+- README: clarify that `python -m nabia.catalog` needs the interpreter
+  where Nabia is installed (`uv run` inside this repository).
+
 ## [0.1.0] - 2026-11-07
 
 ### Added

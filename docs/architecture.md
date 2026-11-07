@@ -48,10 +48,25 @@ Definitions drift over time, so tables are checked at three moments:
 |--------------|--------------------------------------------------------|
 | Import time  | Resolution allowed, unit convertible to canonical unit |
 | Every call   | Native column present, reported unit equals the table  |
+| Offline      | Every name/value the client sends is in the spec snapshot |
 | `-m live`    | Every mapped variable requested from the real API      |
+| `-m live`    | Published spec compared with the snapshot (early warning) |
 
 `verified_on` records the last successful live check. A mismatch
 raises; Nabia never returns data it cannot vouch for.
+
+### Upstream specifications
+
+When a provider publishes a machine-readable description (OpenAPI,
+OGC API Processes, parameter metadata), its test folder can hold a
+small JSON snapshot of the parts Nabia relies on (`spec_snapshot.json`,
+built by `spec.py`), never the full document. Snapshots are local
+maintenance baselines: git-ignored, never published, and the tests
+that need one are skipped until it is created. Specifications can lag
+the real API, so the live API stays the source of truth: values that
+work live but are not documented yet are listed in `KNOWN_SPEC_GAPS`,
+and a test fails as soon as upstream documents them. Specifications
+are used as a checker, not to generate code.
 
 ## Errors
 
@@ -83,3 +98,5 @@ unit surprises map to `ProviderContractError`.
 | 2026-11-07 | Extras: pandas export; opt-in SQLite response cache. |
 | 2026-11-07 | TLS via OS trust store by default; certifi fallback (Android). |
 | 2026-11-07 | First providers: Open-Meteo (reference), then AEMET, NASA POWER, Copernicus CDS/ADS/CLMS. |
+| 2026-11-07 | Published API specs watched as drift early warning; not used for code generation. |
+| 2026-11-07 | Spec snapshots stay local (git-ignored): development happens on one machine, nothing derived from upstream specs is published. |

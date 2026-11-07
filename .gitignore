@@ -32,6 +32,9 @@ htmlcov/
 *.sqlite3
 data/
 
+# --- Upstream spec snapshots: local-only maintenance baselines --------------
+spec_snapshot.json
+
 # --- Editors and OS ---------------------------------------------------------
 .vscode/
 .idea/
