@@ -59,8 +59,9 @@ Functions in a provider's `mapping.py` (e.g. Open-Meteo's
 Cases are defined in `tests/providers/<name>/conformance.py`, each with
 its declared outcome, and recorded by running the Python client against
 a mocked transport; recording fails if the outcome differs. Python
-replays the committed cases in `tests/test_conformance.py`, and every
-port replays them the same way, with retries disabled:
+replays the committed cases in `tests/test_conformance.py` and Dart in
+`dart/test/conformance_test.dart`; every port replays them the same
+way, with retries disabled:
 
 1. Mock HTTP so that any request gets `response`: either an HTTP
    answer (`status`, `headers`, JSON `body`) or

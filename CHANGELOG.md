@@ -11,6 +11,11 @@ they are always listed under **Changed** or **Removed**.
 
 ### Added
 
+- Dart package in `dart/` (pure Dart, for Flutter apps): Open-Meteo
+  client, models, sealed exception hierarchy and HTTP layer with the
+  same policy as Python. Vocabulary and tables are generated from
+  `contract/`; it passes every conformance case. Released with the
+  same tags (`git` + `path: dart`).
 - `Conversion` and `CONVERSIONS` in `nabia.catalog`: unit conversions
   are declared as data, `(value - offset) / divisor`. Results are
   unchanged, bit for bit.

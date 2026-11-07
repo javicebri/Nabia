@@ -35,6 +35,22 @@ uv add git+https://github.com/javicebri/Nabia --tag v0.1.0 --extra pandas
 
 The `pandas` extra is optional and only needed for `to_dataframe()`.
 
+### Dart and Flutter
+
+A Dart port lives in [`dart/`](dart/README.md), released with the same
+tags. Its tables are generated from the shared
+[contract](contract/README.md) and it passes the same conformance
+cases as Python:
+
+```yaml
+dependencies:
+  nabia:
+    git:
+      url: https://github.com/javicebri/Nabia.git
+      path: dart
+      ref: v0.4.0
+```
+
 ## Quick start
 
 ```python

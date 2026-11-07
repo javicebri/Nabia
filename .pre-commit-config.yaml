@@ -47,3 +47,12 @@ repos:
         language: system
         files: ^(src/nabia/|tools/|tests/providers/[^/]+/(conformance\.py|fixtures/)|contract/)
         pass_filenames: false
+
+      # The Dart port: format, analysis, generated code and the shared
+      # conformance cases.
+      - id: dart
+        name: dart package
+        entry: uv run python -m tools.dart
+        language: system
+        files: ^(dart/|contract/)
+        pass_filenames: false

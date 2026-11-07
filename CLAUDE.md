@@ -19,6 +19,9 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
 - Regenerate the language-neutral contract (commit it) after changing
   the catalog, output models, a provider or its conformance cases:
   `uv run python -m tools.contract` (`--check` only verifies)
+- Dart port, inside `dart/`: `dart run tool/generate.dart` (after the
+  contract changes), `dart format .`, `dart analyze --fatal-infos`,
+  `dart test`; all at once from the root: `uv run python -m tools.dart`
 - Create/refresh a spec snapshot (local only, git-ignored; never
   commit it): `uv run python -m tests.providers.<name>.spec`
 
@@ -37,7 +40,12 @@ machine sandboxes the `.exe` launchers in `.venv/Scripts`.
   conformance cases) that ports to other languages build from and
   test against; see its README. Large: grep it, never read it whole
 - `tools/`: repository maintenance scripts (contract export,
-  conformance recording), not shipped; never provider-specific
+  conformance recording, Dart checks), not shipped; never
+  provider-specific
+- `dart/`: idiomatic Dart port (pure Dart, for Flutter). Python is the
+  reference: change behaviour there first, regenerate the contract,
+  then make Dart pass it. `lib/src/generated/` is generated; never edit
+  it. See `dart/README.md`
 
 ## Token-efficient workflow
 

@@ -80,9 +80,9 @@ are used as a checker, not to generate code.
 ## Language-neutral contract
 
 Python is the reference implementation. Apps written in other
-languages (Flutter) cannot use it, so Nabia will also be ported to
-Dart, in this repository, as idiomatic Dart rather than a line-by-line
-clone. What both implementations must share is exported to
+languages (Flutter) cannot use it, so Nabia is also ported to Dart, in
+this repository (`dart/`), as idiomatic Dart rather than a line-by-line
+clone (see `dart/README.md` for how its design maps to Python's). What both implementations must share is exported to
 `contract/` by `python -m tools.contract`: the catalog (units,
 conversions, variables), each provider's endpoints and mapping
 tables, the JSON Schema of the output models and golden conformance
@@ -153,3 +153,5 @@ requests or from what the provider reports.
 | 2026-11-07 | Unit conversions declared as affine data instead of code, so ports reproduce results exactly. |
 | 2026-11-07 | Shared behaviour is specified once as conformance cases (Smithy protocol-test style) replayed by every implementation; Python-only tests cover the Python API surface. Contract-first IDL generation (Smithy, OpenAPI) reconsidered if more languages or many providers appear. |
 | 2026-11-07 | `RateLimitError.retry_after` reports the provider's requested wait uncapped; only Nabia's own retry sleeps are capped at 30 s. |
+| 2026-11-07 | Dart port: pure Dart package, `package:http` (injectable client), `package:timezone` with the full IANA database kept apart from the app's global state, one shared tag for Python and Dart, `publish_to: none`. |
+| 2026-11-07 | Dart idioms: `Future` APIs, `ArgumentError` for invalid arguments, sealed `NabiaException` hierarchy for run-time failures, `TZDateTime` for hourly and `CalendarDate` for daily time axes. |

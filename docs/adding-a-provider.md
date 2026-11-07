@@ -47,6 +47,13 @@ Use `providers/open_meteo/` as the reference implementation.
      the diff.
    - `test_client.py` only for what is specific to the Python API
      (settings, accepted argument types, exception classes).
+7. **Dart port** (`dart/`): run `dart run tool/generate.dart` (the
+   provider's tables appear in `lib/src/generated/providers/`), write
+   `lib/src/providers/<name>/` following `open_meteo/` (client taking
+   endpoints, `HttpOptions`, an optional `http.Client` and, if needed,
+   the credentials as arguments), export it from `lib/nabia.dart` and
+   register it in `test/conformance_test.dart`. Done when every
+   conformance case passes (`uv run python -m tools.dart`).
    - `tests/live/test_<name>_live.py` requesting every mapped variable,
      marked `live`. Keys come from the environment; skip when absent.
    - If the provider publishes a specification: `tests/providers/<name>/
@@ -54,7 +61,7 @@ Use `providers/open_meteo/` as the reference implementation.
      offline `test_spec.py` and a live spec test. Copy the Open-Meteo
      ones and reuse the helpers in `tests/specs.py`. The snapshot is
      generated locally and git-ignored; never commit it.
-7. **Docs**: provider row in `README.md`, variables in `.env.example`,
+8. **Docs**: provider row in `README.md`, variables in `.env.example`,
    entry in `CHANGELOG.md`.
 
 ## When an upstream API changes (drift runbook)
