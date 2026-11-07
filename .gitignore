@@ -19,6 +19,7 @@ __pycache__/
 build/
 dist/
 .venv/
+test.py
 
 # --- Tooling caches ---------------------------------------------------------
 .mypy_cache/
